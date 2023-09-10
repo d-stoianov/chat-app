@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "username": "angrytomato2011",
+        "text": "Hello there",
+        "timeStamp": "10/09/2023:21:17:25"
+    },
+    {
+        "id": "2",
+        "username": "ryangosling321",
+        "text": "Hi tomato",
+        "timeStamp": "10/09/2023:21:18:03"
+    },
+    {
+        "id": "3",
+        "username": "angrytomato2011",
+        "text": "you are my favourite actor!",
+        "timeStamp": "10/09/2023:21:18:25"
+    },
+    {
+        "id": "4",
+        "username": "ryangosling321",
+        "text": "thank you tomato, i really appreciate it.",
+        "timeStamp": "10/09/2023:21:19:25"
+    }
+]
