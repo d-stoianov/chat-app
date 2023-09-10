@@ -1,5 +1,6 @@
 import { useState } from "react"
 import ChatInput from "./ChatInput"
+import Message from "./Message"
 
 const Chat = () => {
     const [messages, setMessages] = useState([])
@@ -10,14 +11,12 @@ const Chat = () => {
 
     return (
         <main className="w-full h-full flex flex-col justify-between overflow-y-hidden">
-            <div className="w-full h-full gap-0.5 px-4 py-1 flex flex-col overflow-y-auto">
+            <div className="w-full h-full px-4 py-1 flex flex-col overflow-y-auto">
                 {messages.map((msg, idx) => (
-                    <p 
+                    <Message
                         key={idx}
-                        className="text-zinc-200 self-end"
-                    >
-                        {msg}
-                    </p>
+                        message={msg}
+                    />
                 ))}
             </div>
             <ChatInput onMessage={renderMessage} />
