@@ -1,48 +1,57 @@
-let messages = [
-    {
-        id: 1,
-        username: "ryangosling321",
-        text: "Hi tomato",
-        timeStamp: "10/09/2023:21:18:03"
-    },
-    {
-        id: 2,
-        username: "ryangosling321",
-        text: "Hi tomato",
-        timeStamp: "10/09/2023:21:18:03"
+import Message from "../models/message.js"
+
+export const getMessages = async (req, res) => {
+    try {
+        const messages = await Message.find()
+        res.json(messages)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
-]
-
-export const getMessages = (req, res) => {
-    res.send(messages)
 }
 
-export const createMessage = (req, res) => {
-    const message = req.body
-    messages.push(message)
-
-    res.send(messages)
-}
-
-export const deleteMessage = (req, res) => {
-    const { id } = req.params
-
-    messages = messages.filter(message => {
-        return message.id != id
+export const createMessage = async (req, res) => {
+    const message = new Message({
+        text: req.body.text
     })
 
-    res.send(messages)
+    try {
+        const newMessage = await message.save()
+        res.status(201).json(newMessage)
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
 }
 
-export const editMessage = (req, res) => {
+export const deleteMessage = async (req, res) => {
     const { id } = req.params
 
-    const messageToBeEdited = messages.find(message => {
-        return message.id == id
-    })
+    try {
+        const message = await Message.findByIdAndDelete(id)
+
+        if (!message) {
+            res.status(404).send("Message not found")
+        } else {
+            res.status(200).json(message)
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+export const editMessage = async (req, res) => {
+    const { id } = req.params
 
     const newText = req.body.text
-    messageToBeEdited.text = newText
 
-    res.send(messageToBeEdited)
+    try {
+        const message = await Message.findByIdAndUpdate(id, {text: newText}, {new: true})
+
+        if (!message) {
+            res.status(404).send("Message not found")
+        } else {
+            res.status(200).json(message)
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
 }
