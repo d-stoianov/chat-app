@@ -3,6 +3,7 @@ import bodyParser from "body-parser"
 import mongoose from "mongoose"
 import dotenv from "dotenv"
 import messagesRoutes from "./routes/messages.js"
+import loginRoutes from "./routes/login.js"
 
 dotenv.config()
 
@@ -17,6 +18,7 @@ db.once("open", () => console.log("Connected to the database"))
 app.use(bodyParser.json())
 
 app.use("/messages", messagesRoutes)
+app.use("/login", loginRoutes)
 
 app.get("/", (req, res) => res.send("you reached the home page"))
 
