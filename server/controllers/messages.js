@@ -10,8 +10,13 @@ export const getMessages = async (req, res) => {
 }
 
 export const createMessage = async (req, res) => {
+    const { text } = req.body
+    const { username, userPicture } = req.user
+
     const message = new Message({
-        text: req.body.text
+        text: text,
+        username: username,
+        userPicture: userPicture
     })
 
     try {
@@ -22,15 +27,25 @@ export const createMessage = async (req, res) => {
     }
 }
 
-export const deleteMessage = async (req, res) => {
+
+export const editMessage = async (req, res) => {
     const { id } = req.params
+    const username = req.user.username
+
+    const newText = req.body.text
 
     try {
-        const message = await Message.findByIdAndDelete(id)
+        const messageToEdit = await Message.findById(id)
 
-        if (!message) {
+        if (!messageToEdit) {
             res.status(404).send("Message not found")
         } else {
+            if (messageToEdit.username !== username) {
+                return res.status(403).send("You do not have permission to edit this message")
+            }
+
+            const message = await Message.findByIdAndUpdate(id, {text: newText}, {new: true})
+
             res.status(200).json(message)
         }
     } catch (error) {
@@ -38,17 +53,22 @@ export const deleteMessage = async (req, res) => {
     }
 }
 
-export const editMessage = async (req, res) => {
+export const deleteMessage = async (req, res) => {
     const { id } = req.params
-
-    const newText = req.body.text
+    const username = req.user.username
 
     try {
-        const message = await Message.findByIdAndUpdate(id, {text: newText}, {new: true})
+        const messageToDelete = await Message.findById(id)
 
-        if (!message) {
+        if (!messageToDelete) {
             res.status(404).send("Message not found")
         } else {
+            if (messageToDelete.username !== username) {
+                return res.status(403).send("You do not have permission to delete this message")
+            }
+
+            const message = await Message.findByIdAndDelete(id)
+
             res.status(200).json(message)
         }
     } catch (error) {

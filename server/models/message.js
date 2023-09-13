@@ -5,6 +5,13 @@ const messageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    username: {
+        type: String,
+        required: true
+    },
+    userPicture: {
+        type: String
+    }
 }, { timestamps: true })
 
 export default mongoose.model("Message", messageSchema)
