@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import cron from "node-cron"
 import cleanupInactiveUsers from "./scripts/cleanupUsers.js"
+import cleanupOldMessages from "./scripts/cleanupMessages.js"
 import loginRoutes from "./routes/login.js"
 import pingRoutes from "./routes/ping.js"
 import messagesRoutes from "./routes/messages.js"
@@ -28,5 +29,6 @@ app.get("/", (req, res) => res.send("you reached the home page"))
 
 cron.schedule('0 12 * * *', cleanupInactiveUsers)
 cron.schedule('0 0 * * *', cleanupInactiveUsers)
+cron.schedule("0 0 * * *", cleanupOldMessages)
 
 app.listen(PORT, () => console.log(`Server running on port: http://localhost:${PORT}`))
