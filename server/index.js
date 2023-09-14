@@ -1,4 +1,5 @@
 import express from "express"
+import cors from "cors"
 import bodyParser from "body-parser"
 import mongoose from "mongoose"
 import dotenv from "dotenv"
@@ -19,6 +20,20 @@ const db = mongoose.connection
 db.on("error", error => console.log(error))
 db.once("open", () => console.log("Connected to the database"))
 
+const whitelist = ["http://localhost:3000"] // add future domain
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (whitelist.includes(origin) || !origin) {
+            callback(null, true)
+        } else {
+            callback(null, false)
+        }
+    },
+    credentials: true
+}
+
+app.use(cors(corsOptions))
 app.use(bodyParser.json())
 
 app.use("/login", loginRoutes)
