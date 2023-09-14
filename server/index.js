@@ -7,6 +7,7 @@ import cron from "node-cron"
 import cleanupInactiveUsers from "./scripts/cleanupUsers.js"
 import cleanupOldMessages from "./scripts/cleanupMessages.js"
 import loginRoutes from "./routes/login.js"
+import logoutRoutes from "./routes/logout.js"
 import pingRoutes from "./routes/ping.js"
 import messagesRoutes from "./routes/messages.js"
 
@@ -37,6 +38,7 @@ app.use(cors(corsOptions))
 app.use(bodyParser.json())
 
 app.use("/login", loginRoutes)
+app.use("/logout", logoutRoutes)
 app.use("/ping", pingRoutes)
 app.use("/messages", messagesRoutes)
 
