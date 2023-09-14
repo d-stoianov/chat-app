@@ -5,7 +5,12 @@ const ChatInput = ({ onMessage }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onMessage(message)
+        const trimmedMessage = message.trim()
+        if (trimmedMessage.length > 0) {
+            onMessage(trimmedMessage)
+        } else {
+            alert("Invalid message")
+        }
         setMessage("")
     }
 

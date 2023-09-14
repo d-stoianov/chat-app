@@ -13,8 +13,9 @@ const Chat = ({ username }) => {
         .then(data => setMessages(data))
     }, [])
 
-    const renderMessage = (message) => {
-        setMessages([...messages, message])
+    const renderMessage = async (message) => {
+        const newMessage = await service.sendMessage(message)
+        setMessages([...messages, newMessage])
     }
 
     return (
