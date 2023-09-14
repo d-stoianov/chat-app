@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 :root {
-    @apply bg-indigo-700
+    @apply bg-gray-800
 }

@@ -1,16 +1,29 @@
-const Message = ({ message }) => {
-    const myMessageStyles = "text-zinc-200 self-end bg-sky-500 rounded-xl p-1 px-4 my-1.5 max-w-[50%]"
-    const otherMessageStyles = "text-zinc-200 self-start bg-gray-500 rounded-xl p-1 px-4 my-1.5 max-w-[50%]"
+import "../styles/Message.css"
 
+const Message = ({ message }) => {
     return (
-        <>
-            <p className="text-zinc-200 ml-2">
-                {message.username}
-            </p>
-            <div className={otherMessageStyles}>
-                {message.text}
+        <>  
+            {/* <div className="myMessage">
+                <h1 className="myUsername">
+                    {message.username}
+                </h1>
                 <p>
-                    {message.timeStamp}
+                    {message.text}
+                </p>
+                <p className="myTime">
+                    {new Date(message.createdAt).toLocaleTimeString()}
+                </p>
+            </div> */}
+
+            <div className="otherMessage">
+                <h1 className="otherUsername">
+                    {message.username}
+                </h1>
+                <p>
+                    {message.text}
+                </p>
+                <p className="otherTime">
+                    {new Date(message.createdAt).toLocaleTimeString()}
                 </p>
             </div>
         </>

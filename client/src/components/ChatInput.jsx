@@ -18,7 +18,7 @@ const ChatInput = ({ onMessage }) => {
                 onChange={(e) => setMessage(e.target.value)}
             />
             <button 
-                className="w-[20%] md:w-[10%] bg-sky-600 flex justify-center items-center"
+                className="w-[20%] md:w-[10%] bg-blue-600 flex justify-center items-center font-bold text-white"
                 type="submit"
             >
                 Send

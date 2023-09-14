@@ -19,10 +19,10 @@ const Chat = () => {
 
     return (
         <main className="w-full h-full flex flex-col justify-between overflow-y-hidden">
-            <div className="w-full h-full px-4 py-1 flex flex-col overflow-y-auto">
+            <div className="w-full px-4 py-1 mt-2 flex flex-col overflow-y-auto">
                 {messages.map(msg => (
                     <Message
-                        key={msg.id}
+                        key={msg._id}
                         message={msg}
                     />
                 ))}
