@@ -3,7 +3,7 @@ import ChatInput from "./ChatInput"
 import Message from "./Message"
 import Service from "../services/service"
 
-const Chat = () => {
+const Chat = ({ username }) => {
     const [messages, setMessages] = useState([])
 
     const service = new Service()
@@ -23,6 +23,7 @@ const Chat = () => {
                 {messages.map(msg => (
                     <Message
                         key={msg._id}
+                        username={username}
                         message={msg}
                     />
                 ))}
