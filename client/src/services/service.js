@@ -1,4 +1,9 @@
 import Cookie from "./cookie"
+import { io } from "socket.io-client"
+
+// TODO make context
+
+const socket = io("http://localhost:4000", { autoConnect: false })
 
 class Service {
     constructor() {
@@ -6,22 +11,35 @@ class Service {
         this.tokenCookieName = "jwt"
     }
 
+    addReceiveMessageListener(cb) {
+        socket.on("receiveMessage", cb)
+    }
+
+    removeReceiveMessageListener() {
+        socket.off("receiveMessage")
+    }
+
     async login(username, userPicture) {
         try {
             const response = await fetch(`${this.url}/login`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username: username, userPicture: userPicture })
+                body: JSON.stringify({
+                    username: username,
+                    userPicture: userPicture,
+                }),
             })
             const data = await response.json()
-            
+
             if (data.token) {
                 Cookie.set(this.tokenCookieName, data.token)
                 Cookie.set("username", username)
             }
-            
+
+            socket.connect()
+
             return data
         } catch (error) {
             console.error(error)
@@ -40,7 +58,7 @@ class Service {
             const response = await fetch(`${this.url}/logout`, {
                 method: "POST",
                 headers: {
-                    "Authorization": token
+                    Authorization: token,
                 },
             })
 
@@ -48,6 +66,7 @@ class Service {
                 const data = await response.json()
                 Cookie.delete(this.tokenCookieName)
                 Cookie.delete("username")
+                socket.disconnect()
                 return data
             }
         } catch (error) {
@@ -68,8 +87,8 @@ class Service {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: token
-                }
+                    Authorization: token,
+                },
             })
             const data = await response.json()
             return data
@@ -86,21 +105,14 @@ class Service {
             return
         }
 
-        try {
-            const response = await fetch(`${this.url}/messages`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: token
-                },
-                body: JSON.stringify({ text: text })
-            })
-            
-            const data = await response.json()
-            return data
-        } catch (error) {
-            console.error(error)
-        }
+        socket.emit(
+            "sendMessage",
+            { text, username: Cookie.get("username"), userPicture: "123" },
+            (res) => {
+                console.log(res)
+                return res
+            }
+        )
     }
 }
 

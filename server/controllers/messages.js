@@ -9,25 +9,6 @@ export const getMessages = async (req, res) => {
     }
 }
 
-export const createMessage = async (req, res) => {
-    const { text } = req.body
-    const { username, userPicture } = req.user
-
-    const message = new Message({
-        text: text,
-        username: username,
-        userPicture: userPicture
-    })
-
-    try {
-        const newMessage = await message.save()
-        res.status(201).json(newMessage)
-    } catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-}
-
-
 export const editMessage = async (req, res) => {
     const { id } = req.params
     const username = req.user.username
@@ -41,10 +22,16 @@ export const editMessage = async (req, res) => {
             res.status(404).send("Message not found")
         } else {
             if (messageToEdit.username !== username) {
-                return res.status(403).send("You do not have permission to edit this message")
+                return res
+                    .status(403)
+                    .send("You do not have permission to edit this message")
             }
 
-            const message = await Message.findByIdAndUpdate(id, {text: newText}, {new: true})
+            const message = await Message.findByIdAndUpdate(
+                id,
+                { text: newText },
+                { new: true }
+            )
 
             res.status(200).json(message)
         }
@@ -64,7 +51,9 @@ export const deleteMessage = async (req, res) => {
             res.status(404).send("Message not found")
         } else {
             if (messageToDelete.username !== username) {
-                return res.status(403).send("You do not have permission to delete this message")
+                return res
+                    .status(403)
+                    .send("You do not have permission to delete this message")
             }
 
             const message = await Message.findByIdAndDelete(id)

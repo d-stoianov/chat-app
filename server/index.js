@@ -8,17 +8,20 @@ import cleanupInactiveUsers from "./scripts/cleanupUsers.js"
 import cleanupOldMessages from "./scripts/cleanupMessages.js"
 import loginRoutes from "./routes/login.js"
 import logoutRoutes from "./routes/logout.js"
-import pingRoutes from "./routes/ping.js"
 import messagesRoutes from "./routes/messages.js"
+import setupSocketServer from "./sockets/socketServer.js"
 
 dotenv.config()
 
 const app = express()
 const PORT = 5000
 
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DATABASE_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
 const db = mongoose.connection
-db.on("error", error => console.log(error))
+db.on("error", (error) => console.log(error))
 db.once("open", () => console.log("Connected to the database"))
 
 const whitelist = ["http://localhost:3000"] // add future domain
@@ -31,7 +34,7 @@ const corsOptions = {
             callback(null, false)
         }
     },
-    credentials: true
+    credentials: true,
 }
 
 app.use(cors(corsOptions))
@@ -39,13 +42,16 @@ app.use(bodyParser.json())
 
 app.use("/login", loginRoutes)
 app.use("/logout", logoutRoutes)
-app.use("/ping", pingRoutes)
 app.use("/messages", messagesRoutes)
 
 app.get("/", (req, res) => res.send("you reached the home page"))
 
-cron.schedule('0 12 * * *', cleanupInactiveUsers)
-cron.schedule('0 0 * * *', cleanupInactiveUsers)
+cron.schedule("0 12 * * *", cleanupInactiveUsers)
+cron.schedule("0 0 * * *", cleanupInactiveUsers)
 cron.schedule("0 0 * * *", cleanupOldMessages)
 
-app.listen(PORT, () => console.log(`Server running on port: http://localhost:${PORT}`))
+app.listen(PORT, () =>
+    console.log(`Server running on port: http://localhost:${PORT}`)
+)
+
+setupSocketServer()

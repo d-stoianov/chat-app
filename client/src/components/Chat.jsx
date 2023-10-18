@@ -9,24 +9,24 @@ const Chat = ({ username }) => {
     const service = new Service()
 
     useEffect(() => {
-        service.getMessages()
-        .then(data => setMessages(data))
+        service.getMessages().then((data) => setMessages(data))
+
+        service.addReceiveMessageListener((newMessage) => {
+            setMessages((messages) => [...messages, newMessage])
+        })
+
+        return () => service.removeReceiveMessageListener()
     }, [])
 
     const renderMessage = async (message) => {
-        const newMessage = await service.sendMessage(message)
-        setMessages([...messages, newMessage])
+        await service.sendMessage(message)
     }
 
     return (
         <main className="w-full h-full flex flex-col justify-between overflow-y-hidden">
             <div className="w-full px-4 py-1 mt-2 flex flex-col overflow-y-auto">
-                {messages.map(msg => (
-                    <Message
-                        key={msg._id}
-                        username={username}
-                        message={msg}
-                    />
+                {messages.map((msg) => (
+                    <Message key={msg._id} username={username} message={msg} />
                 ))}
             </div>
             <ChatInput onMessage={renderMessage} />
