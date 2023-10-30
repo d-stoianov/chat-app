@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import ChatInput from "./ChatInput"
 import Message from "./Message"
-import Service from "../services/service"
+import service from "../services/service"
 
 const Chat = ({ username }) => {
     const [messages, setMessages] = useState([])
-
-    const service = new Service()
 
     useEffect(() => {
         service.getMessages().then((data) => setMessages(data))

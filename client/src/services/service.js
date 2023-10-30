@@ -109,11 +109,12 @@ class Service {
             "sendMessage",
             { text, username: Cookie.get("username"), userPicture: "123" },
             (res) => {
-                console.log(res)
                 return res
             }
         )
     }
 }
 
-export default Service
+const service = new Service()
+
+export default service
