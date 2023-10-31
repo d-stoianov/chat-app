@@ -1,16 +1,14 @@
-import { Server } from "socket.io"
+import {Server} from "socket.io"
 import sendMessageHandler from "./handlers/sendMessageHandler.js"
 
-const setupSocketServer = () => {
-    const io = new Server({
+const setupSocketServer = (server) => {
+    const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: process.env.CLIENT_URL || "http://localhost:3000",
         },
     })
 
     const sockets = []
-
-    io.listen(4000)
 
     io.on("connection", (socket) => {
         console.log("connected")

@@ -3,11 +3,14 @@ import { io } from "socket.io-client"
 
 // TODO make context
 
-const socket = io("http://localhost:4000", { autoConnect: false })
+const url = import.meta.env.VITE_SERVER_URL || "http://localhost:8080"
+
+const socket = io(url, {
+    autoConnect: false,
+})
 
 class Service {
     constructor() {
-        this.url = "http://localhost:5000"
         this.tokenCookieName = "jwt"
     }
 
@@ -21,7 +24,7 @@ class Service {
 
     async login(username, userPicture) {
         try {
-            const response = await fetch(`${this.url}/login`, {
+            const response = await fetch(`${url}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -55,7 +58,7 @@ class Service {
         }
 
         try {
-            const response = await fetch(`${this.url}/logout`, {
+            const response = await fetch(`${url}/logout`, {
                 method: "POST",
                 headers: {
                     Authorization: token,
@@ -83,7 +86,7 @@ class Service {
         }
 
         try {
-            const response = await fetch(`${this.url}/messages`, {
+            const response = await fetch(`${url}/messages`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
