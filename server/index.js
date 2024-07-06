@@ -24,20 +24,7 @@ const db = mongoose.connection
 db.on("error", (error) => console.log(error))
 db.once("open", () => console.log("Connected to the database"))
 
-const whitelist = [process.env.CLIENT_URL || "http://localhost:3000"]
-
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (whitelist.includes(origin) || !origin) {
-            callback(null, true)
-        } else {
-            callback(null, false)
-        }
-    },
-    credentials: true,
-}
-
-app.use(cors(corsOptions))
+app.use(cors())
 app.use(bodyParser.json())
 
 app.use("/login", loginRoutes)
