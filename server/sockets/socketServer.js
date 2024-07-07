@@ -4,7 +4,7 @@ import sendMessageHandler from "./handlers/sendMessageHandler.js"
 const setupSocketServer = (server) => {
     const io = new Server(server, {
         cors: {
-            origin: process.env.CLIENT_URL || "http://localhost:3000",
+            origin: true,
         },
     })
 
