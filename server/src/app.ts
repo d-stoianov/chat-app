@@ -20,15 +20,37 @@ const io = new SocketServer(server, {
     },
 })
 
+interface Message {
+    sender: string
+    text: string
+}
+const messages: Message[] = []
+
 io.on('connection', (socket) => {
     console.log(`new connection with socket id: ${socket.id}`)
 
     socket.on('join', (name: string, cb: (response: string) => void) => {
         if (name.length > 0) {
-            console.log(`new user joined with name: ${name}`)
             cb('success')
+            io.emit('sendMessagesToAll', messages)
         } else {
             console.error(`name: ${name} is too short`)
+            cb('fail')
+        }
+    })
+
+    socket.on('sendMsg', (msgText: string, cb: (response: string) => void) => {
+        if (msgText.length > 0) {
+            const message = {
+                sender: socket.id,
+                text: msgText,
+            }
+            messages.push(message)
+            cb('success')
+
+            io.emit('sendMessagesToAll', messages)
+        } else {
+            console.error(`msg text: ${msgText} is not valid`)
             cb('fail')
         }
     })
