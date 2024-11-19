@@ -15,11 +15,15 @@ const Home = ({
             >
                 <input
                     className="w-full rounded-2xl p-2 outline-none"
+                    value={name}
                     onChange={(e) => setName(e.target.value)}
                     type="text"
                     placeholder="name"
                 />
-                <button className="w-full rounded-2xl bg-white p-2 outline-none hover:bg-gray-100">
+                <button
+                    type="submit"
+                    className="w-full rounded-2xl bg-white p-2 outline-none hover:bg-gray-100"
+                >
                     chat!
                 </button>
             </form>

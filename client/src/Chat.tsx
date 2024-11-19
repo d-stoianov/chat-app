@@ -69,7 +69,10 @@ const Chat = ({ socket }: { socket: Socket }) => {
                         value={msgText}
                         onChange={(e) => setMsgText(e.target.value)}
                     />
-                    <button className="rounded-md px-6 py-1 text-white outline outline-white hover:bg-slate-50 hover:text-black">
+                    <button
+                        type="submit"
+                        className="rounded-md px-6 py-1 text-white outline outline-white hover:bg-slate-50 hover:text-black"
+                    >
                         Send
                     </button>
                 </form>
