@@ -6,11 +6,19 @@ interface Message {
     text: string
 }
 
-const Message = ({ sender, text }: Message) => {
+const Message = ({
+    sender,
+    text,
+    isMirrored = false,
+}: Message & { isMirrored: boolean }) => {
     return (
-        <div className="max-w-max rounded-lg bg-slate-100 px-3 py-1">
-            <p>{sender}</p>
-            <p>{text}</p>
+        <div
+            className={`flex w-full ${isMirrored ? 'justify-end' : 'justify-start'}`}
+        >
+            <div className="max-w-max rounded-lg bg-slate-100 px-3 py-1">
+                <p>{sender}</p>
+                <p>{text}</p>
+            </div>
         </div>
     )
 }
@@ -44,7 +52,11 @@ const Chat = ({ socket }: { socket: Socket }) => {
             <section className="relative w-full flex-grow rounded-t-2xl bg-slate-400 sm:w-[30rem]">
                 <div className="flex flex-col gap-2 p-2">
                     {receivedMessages.map((msg, id) => (
-                        <Message key={id} {...msg} />
+                        <Message
+                            {...msg}
+                            key={id}
+                            isMirrored={msg.sender === socket.id}
+                        />
                     ))}
                 </div>
                 <form
