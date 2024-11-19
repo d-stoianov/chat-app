@@ -1,4 +1,5 @@
 import * as http from 'http'
+import { Server as SocketServer } from 'socket.io'
 
 const PORT = 3000
 
@@ -10,5 +11,15 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(PORT, () => {
-    console.log(`Server is running on port - ${PORT}`)
+    console.log(`HTTP server is running on port - ${PORT}`)
+})
+
+const io = new SocketServer(server, {
+    cors: {
+        origin: 'http://localhost:5173',
+    },
+})
+
+io.on('connection', (socket) => {
+    console.log(`new connection with socket id: ${socket.id}`)
 })
