@@ -49,8 +49,8 @@ const Chat = ({ socket }: { socket: Socket }) => {
             <h1 className="py-4 text-center text-2xl text-white">
                 Welcome to the chat
             </h1>
-            <section className="relative w-full flex-grow rounded-t-2xl bg-slate-400 sm:w-[30rem]">
-                <div className="flex flex-col gap-2 p-2">
+            <section className="relative flex h-full max-h-[44rem] w-full flex-col rounded-t-2xl bg-slate-400 sm:w-[30rem]">
+                <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-2">
                     {receivedMessages.map((msg, id) => (
                         <Message
                             {...msg}
@@ -61,7 +61,7 @@ const Chat = ({ socket }: { socket: Socket }) => {
                 </div>
                 <form
                     onSubmit={onSend}
-                    className="absolute bottom-0 left-0 flex h-[4rem] w-full items-center gap-6 bg-slate-700 px-6"
+                    className="flex h-[4rem] w-full items-center gap-6 bg-slate-700 px-6"
                 >
                     <input
                         type="text"
