@@ -22,4 +22,14 @@ const io = new SocketServer(server, {
 
 io.on('connection', (socket) => {
     console.log(`new connection with socket id: ${socket.id}`)
+
+    socket.on('join', (name: string, cb: (response: string) => void) => {
+        if (name.length > 0) {
+            console.log(`new user joined with name: ${name}`)
+            cb('success')
+        } else {
+            console.error(`name: ${name} is too short`)
+            cb('fail')
+        }
+    })
 })
