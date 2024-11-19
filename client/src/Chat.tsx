@@ -23,7 +23,7 @@ const Message = ({
     )
 }
 
-const Chat = ({ socket }: { socket: Socket }) => {
+const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
     const [msgText, setMsgText] = useState<string>('')
 
@@ -40,7 +40,6 @@ const Chat = ({ socket }: { socket: Socket }) => {
     }
 
     socket.on('sendMessagesToAll', (messages: Message[]) => {
-        console.log('messages', messages)
         setReceivedMessages(messages)
     })
 
@@ -55,7 +54,7 @@ const Chat = ({ socket }: { socket: Socket }) => {
                         <Message
                             {...msg}
                             key={id}
-                            isMirrored={msg.sender === socket.id}
+                            isMirrored={msg.sender === name}
                         />
                     ))}
                 </div>

@@ -26,13 +26,25 @@ interface Message {
 }
 const messages: Message[] = []
 
+const userMap = new Map<string, string>()
+
 io.on('connection', (socket) => {
     console.log(`new connection with socket id: ${socket.id}`)
 
     socket.on('join', (name: string, cb: (response: string) => void) => {
         if (name.length > 0) {
+            // check if name is already in the map
+            for (const n of userMap.values()) {
+                if (n === name) {
+                    console.error(`name: ${name} already exists`)
+                    cb('fail')
+                    return
+                }
+            }
+
             cb('success')
             io.emit('sendMessagesToAll', messages)
+            userMap.set(socket.id, name)
         } else {
             console.error(`name: ${name} is too short`)
             cb('fail')
@@ -42,7 +54,7 @@ io.on('connection', (socket) => {
     socket.on('sendMsg', (msgText: string, cb: (response: string) => void) => {
         if (msgText.length > 0) {
             const message = {
-                sender: socket.id,
+                sender: userMap.get(socket.id) ?? socket.id,
                 text: msgText,
             }
             messages.push(message)
@@ -53,5 +65,12 @@ io.on('connection', (socket) => {
             console.error(`msg text: ${msgText} is not valid`)
             cb('fail')
         }
+    })
+
+    // delete the user from the map when he disconnects
+    // actually don't know yet, because it will be confusing,
+    // since you see previous messages with the same user name
+    socket.on('disconnect', () => {
+        userMap.delete(socket.id)
     })
 })
