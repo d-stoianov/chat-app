@@ -13,10 +13,13 @@ const Message = ({
 }: Message & { isMirrored: boolean }) => {
     return (
         <div
-            className={`flex w-full ${isMirrored ? 'justify-end' : 'justify-start'}`}
+            className={`flex w-full flex-col ${isMirrored ? 'items-end' : 'items-start'}`}
         >
-            <div className="max-w-max rounded-lg bg-slate-100 px-3 py-1">
-                <p>{sender}</p>
+            <p className="px-1 text-center">{sender}</p>
+
+            <div
+                className={`max-w-[90%] rounded-xl px-3 py-2 text-black ${isMirrored ? 'bg-lightYellow' : 'bg-lightGray'}`}
+            >
                 <p>{text}</p>
             </div>
         </div>
@@ -44,36 +47,40 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
     })
 
     return (
-        <main className="flex h-full w-full flex-col items-center bg-slate-800 px-8">
-            <h1 className="py-4 text-center text-2xl text-white">
-                Welcome to the chat
+        <main className="flex h-full w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
+            <h1 className="pb-4 text-center text-2xl text-black">
+                Welcome to the chat, {name}!
             </h1>
-            <section className="relative flex h-full max-h-[44rem] w-full flex-col rounded-t-2xl bg-slate-400 sm:w-[30rem]">
-                <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-2">
+            <section className="relative flex h-full max-h-[44rem] w-full flex-col rounded-xl bg-white sm:w-[26rem]">
+                <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-4">
                     {receivedMessages.map((msg, id) => (
                         <Message
-                            {...msg}
                             key={id}
+                            sender={msg.sender === name ? '' : msg.sender}
+                            text={msg.text}
                             isMirrored={msg.sender === name}
                         />
                     ))}
                 </div>
                 <form
+                    className="bg-lightGray m-4 flex h-[5.5rem] flex-col justify-between rounded-xl p-2"
                     onSubmit={onSend}
-                    className="flex h-[4rem] w-full items-center gap-6 bg-slate-700 px-6"
                 >
                     <input
                         type="text"
-                        className="h-[2rem] w-full rounded-md px-2 outline-none"
+                        className="w-full bg-transparent outline-none"
+                        placeholder="Message to the chat"
                         value={msgText}
                         onChange={(e) => setMsgText(e.target.value)}
                     />
-                    <button
-                        type="submit"
-                        className="rounded-md px-6 py-1 text-white outline outline-white hover:bg-slate-50 hover:text-black"
-                    >
-                        Send
-                    </button>
+                    <div className="flex w-full flex-row">
+                        <button
+                            type="submit"
+                            className="hover:bg-hoverBlack ml-auto rounded-lg bg-black px-5 py-[0.175rem] text-center text-white"
+                        >
+                            Send now
+                        </button>
+                    </div>
                 </form>
             </section>
         </main>
