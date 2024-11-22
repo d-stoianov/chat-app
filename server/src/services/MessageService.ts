@@ -25,6 +25,7 @@ class MessageService {
             const message = {
                 sender: this.userService.getUser(socket.id)?.name ?? socket.id,
                 text: msgText,
+                date: new Date().toISOString()
             }
             this.messages.push(message)
             cb('success')

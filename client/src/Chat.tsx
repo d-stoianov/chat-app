@@ -1,16 +1,24 @@
 import { useState } from 'react'
 import { Socket } from 'socket.io-client'
 
-interface Message {
+interface MessageI {
     sender: string
     text: string
+    date: Date
+}
+
+interface MessageDTOI {
+    sender: string
+    text: string
+    date: string
 }
 
 const Message = ({
     sender,
     text,
+    date,
     isMirrored = false,
-}: Message & { isMirrored: boolean }) => {
+}: MessageI & { isMirrored: boolean }) => {
     return (
         <div
             className={`flex w-full flex-col ${isMirrored ? 'items-end' : 'items-start'}`}
@@ -18,16 +26,20 @@ const Message = ({
             <p className="px-1 text-center">{sender}</p>
 
             <div
-                className={`max-w-[90%] rounded-xl px-3 py-2 text-black ${isMirrored ? 'bg-lightYellow' : 'bg-lightGray'}`}
+                className={`flex max-w-[90%] justify-between gap-2 rounded-xl px-3 py-1 text-black ${isMirrored ? 'bg-lightYellow' : 'bg-lightGray'}`}
             >
-                <p>{text}</p>
+                <p className="py-1">{text}</p>
+                <p className="self-end text-[0.75rem]">
+                    {('0' + date.getHours()).slice(-2)}:
+                    {('0' + date.getMinutes()).slice(-2)}
+                </p>
             </div>
         </div>
     )
 }
 
 const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
-    const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
+    const [receivedMessages, setReceivedMessages] = useState<MessageI[]>([])
     const [msgText, setMsgText] = useState<string>('')
 
     const onSend = (e: React.FormEvent) => {
@@ -42,7 +54,10 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
         setMsgText('')
     }
 
-    socket.on('sendMessagesToAll', (messages: Message[]) => {
+    socket.on('sendMessagesToAll', (messagesDTO: MessageDTOI[]) => {
+        const messages = messagesDTO.map((m) => {
+            return { ...m, date: new Date(m.date) }
+        })
         setReceivedMessages(messages)
     })
 
@@ -58,12 +73,13 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
                             key={id}
                             sender={msg.sender === name ? '' : msg.sender}
                             text={msg.text}
+                            date={msg.date}
                             isMirrored={msg.sender === name}
                         />
                     ))}
                 </div>
                 <form
-                    className="bg-lightGray m-4 flex h-[5.5rem] flex-col justify-between rounded-xl p-2"
+                    className="m-4 flex h-[5.5rem] flex-col justify-between rounded-xl bg-lightGray p-2"
                     onSubmit={onSend}
                 >
                     <input
@@ -76,7 +92,7 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
                     <div className="flex w-full flex-row">
                         <button
                             type="submit"
-                            className="hover:bg-hoverBlack ml-auto rounded-lg bg-black px-5 py-[0.175rem] text-center text-white"
+                            className="ml-auto rounded-lg bg-black px-5 py-[0.175rem] text-center text-white hover:bg-hoverBlack"
                         >
                             Send now
                         </button>
