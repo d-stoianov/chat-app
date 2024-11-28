@@ -1,17 +1,19 @@
-import { Socket } from 'socket.io-client'
 import { useState } from 'react'
 
+import { useUser } from '@/context/UserContext'
 import { MessageDTO, Message } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
 
-const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
+const Chat = () => {
+    const { socket, user } = useUser()
+
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
     const [msgText, setMsgText] = useState<string>('')
 
     const onSend = (e: React.FormEvent) => {
         e.preventDefault()
 
-        socket.emit('sendMsg', msgText, (response: string) => {
+        socket?.emit('sendMsg', msgText, (response: string) => {
             if (response === 'success') {
             } else {
                 console.error('failed to send a message')
@@ -20,7 +22,9 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
         setMsgText('')
     }
 
-    socket.on('sendMessagesToAll', (messageDTOs: MessageDTO[]) => {
+    // TODO: messages are dissappearing when switching pages
+
+    socket?.on('sendMessagesToAll', (messageDTOs: MessageDTO[]) => {
         const messages = messageDTOs.map((m) => {
             return new Message({ ...m })
         })
@@ -30,7 +34,7 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
     return (
         <main className="flex h-full w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
             <h1 className="pb-4 text-center text-2xl text-black">
-                Welcome to the chat, {name}!
+                Welcome to the chat, {user?.name}!
             </h1>
             <section className="relative flex h-full max-h-[44rem] w-full flex-col rounded-xl bg-white sm:w-[26rem]">
                 <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-4">
@@ -38,7 +42,7 @@ const Chat = ({ socket, name }: { socket: Socket; name: string }) => {
                         <MessageCard
                             key={id}
                             msg={msg}
-                            isMirrored={msg.sender === name}
+                            isMirrored={msg.sender === user?.name}
                         />
                     ))}
                 </div>
