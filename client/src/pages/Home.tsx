@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { io } from 'socket.io-client'
 
 import { useUser } from '@/context/UserContext'
 import User from '@/entities/User'
 
 const Home = () => {
-    const { socket, login } = useUser()
+    const { login } = useUser()
     const navigate = useNavigate()
 
     const [name, setName] = useState<string>('')
@@ -13,9 +14,11 @@ const Home = () => {
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        socket?.emit('join', name, (response: string) => {
+        const skt = io('localhost:3000')
+        const user = new User(name, skt)
+
+        skt.emit('join', user.name, (response: string) => {
             if (response === 'success') {
-                const user = new User(name)
                 login(user)
                 navigate('/chat')
             } else {
