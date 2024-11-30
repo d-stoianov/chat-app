@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 
 import Home from '@/pages/Home'
+import Rooms from '@/pages/Rooms'
 import Chat from '@/pages/Chat'
 import ProtectedRoute from '@/router/ProtectedRoute'
 
@@ -9,6 +10,7 @@ const AppRoutes = () => {
         <Routes>
             <Route path="/" index element={<Home />} />
             <Route element={<ProtectedRoute />}>
+                <Route path="/rooms" element={<Rooms />} />
                 <Route path="/chat" element={<Chat />} />
             </Route>
         </Routes>

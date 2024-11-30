@@ -20,7 +20,7 @@ const Home = () => {
         skt.emit('join', user.name, (response: string) => {
             if (response === 'success') {
                 login(user)
-                navigate('/chat')
+                navigate('/rooms')
             } else {
                 console.error('Failed to join')
             }
