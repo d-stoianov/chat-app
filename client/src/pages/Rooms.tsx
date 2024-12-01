@@ -1,8 +1,13 @@
+import CreateRoomForm from '@/components/CreateRoomForm'
+import Modal from '@/components/Modal'
 import RoomCard from '@/components/RoomCard'
 import { useUser } from '@/context/UserContext'
+import { useState } from 'react'
 
 const Rooms = () => {
     const { user } = useUser()
+
+    const [showCreateRoomForm, setShowCreateRoomForm] = useState(false)
 
     if (!user) {
         return null
@@ -42,15 +47,23 @@ const Rooms = () => {
             </div>
 
             <section className="h-full max-h-[44rem] w-full overflow-auto rounded-xl bg-white sm:w-[26rem]">
-                <button className="m-8 h-[2rem] w-[8rem] rounded-lg bg-blue-500 text-white">
+                <button
+                    onClick={() => setShowCreateRoomForm(true)}
+                    className="m-8 h-[2rem] w-[8rem] rounded-lg bg-blue-500 text-white"
+                >
                     Create Room
                 </button>
-                {rooms.map((r) => (
-                    <div className="px-8 pb-8">
+                {rooms.map((r, idx) => (
+                    <div key={idx} className="px-8 pb-8">
                         <RoomCard {...r} />
                     </div>
                 ))}
             </section>
+            {showCreateRoomForm && (
+                <Modal onClose={() => setShowCreateRoomForm(false)}>
+                    <CreateRoomForm />
+                </Modal>
+            )}
         </main>
     )
 }
