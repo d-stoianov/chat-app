@@ -1,42 +1,40 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+
 import CreateRoomForm from '@/components/CreateRoomForm'
 import Modal from '@/components/Modal'
 import RoomCard from '@/components/RoomCard'
 import { useUser } from '@/context/UserContext'
-import { useState } from 'react'
+import { RoomDTO, RoomSummaryDTO } from '@/entities/Room'
 
 const Rooms = () => {
     const { user } = useUser()
 
     const [showCreateRoomForm, setShowCreateRoomForm] = useState(false)
+    const [rooms, setRooms] = useState<RoomSummaryDTO[]>([])
+
+    const navigate = useNavigate()
 
     if (!user) {
         return null
     }
 
-    const rooms = [
-        { name: 'my_perfect_room', userCount: 12 },
-        {
-            name: 'my_perfect_room',
-            userCount: 5,
-            description:
-                'this is my beutiful room for chatting, please join :)',
-        },
-        {
-            name: 'my_perfect_room',
-            userCount: 3,
-            description:
-                'this is my beutiful room for chatting, please join :) this is my beutiful room for chatting, please join :) this is my beutiful room for chatting, please join :) this is my beutiful room for chatting, please join :) this is my beutiful room for chatting, please join :) this is my beutiful room for chatting, please join :)',
-        },
-        { name: 'my_perfect_room', userCount: 5 },
-        { name: 'my_perfect_room', userCount: 5 },
-        { name: 'my_perfect_room', userCount: 5 },
-        { name: 'my_perfect_room', userCount: 5 },
-        { name: 'my_perfect_room', userCount: 5 },
-        { name: 'my_perfect_room', userCount: 5 },
-    ]
+    useEffect(() => {
+        user.socket.emit('requestRoomsSummaries')
+
+        user.socket.on('updateRoomList', (rooms: RoomSummaryDTO[]) => {
+            setRooms(rooms)
+        })
+
+        return () => {
+            user.socket.off('updateRoomList')
+        }
+    }, [])
+
+    console.log('rooms', rooms)
 
     return (
-        <main className="flex h-full w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
+        <main className="flex min-h-screen w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
             <div className="mb-2 flex flex-col gap-2">
                 <h1 className="text-center text-2xl text-black">
                     Welcome to the chat, {user.name}!
@@ -46,7 +44,7 @@ const Rooms = () => {
                 </h1>
             </div>
 
-            <section className="h-full max-h-[44rem] w-full overflow-auto rounded-xl bg-white sm:w-[26rem]">
+            <section className="h-full min-h-[44rem] w-full overflow-auto rounded-xl bg-white sm:w-[26rem]">
                 <button
                     onClick={() => setShowCreateRoomForm(true)}
                     className="m-8 h-[2rem] w-[8rem] rounded-lg bg-blue-500 text-white"
@@ -61,7 +59,22 @@ const Rooms = () => {
             </section>
             {showCreateRoomForm && (
                 <Modal onClose={() => setShowCreateRoomForm(false)}>
-                    <CreateRoomForm />
+                    <CreateRoomForm
+                        onSubmit={(room) => {
+                            user.socket.emit(
+                                'createRoom',
+                                {
+                                    name: user.name,
+                                },
+                                room
+                            )
+                            user.socket.on('roomCreated', (room: RoomDTO) => {
+                                navigate(`/room/${room.id}`, {
+                                    state: room,
+                                })
+                            })
+                        }}
+                    />
                 </Modal>
             )}
         </main>

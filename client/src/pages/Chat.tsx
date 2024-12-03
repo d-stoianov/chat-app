@@ -1,46 +1,48 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useUser } from '@/context/UserContext'
-import { MessageDTO, Message } from '@/entities/Message'
+import { Message } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
+import { useLocation } from 'react-router'
+import { RoomDTO } from '@/entities/Room'
 
 const Chat = () => {
     const { user } = useUser()
+
+    const location = useLocation()
+
+    const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
+    const [msgText, setMsgText] = useState<string>('')
 
     if (!user) {
         return
     }
 
-    const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
-    const [msgText, setMsgText] = useState<string>('')
+    useEffect(() => {
+        user.socket.emit('joinRoom', room.id, { name: user.name })
+
+        // when user leaves the page emit leave room event
+        return () => {
+            user.socket.emit('leaveRoom', room.id, { name: user.name })
+        }
+    }, [])
+
+    const room: RoomDTO = location.state
 
     const onSend = (e: React.FormEvent) => {
         e.preventDefault()
-
-        user.socket.emit('sendMsg', msgText, (response: string) => {
-            if (response === 'success') {
-            } else {
-                console.error('failed to send a message')
-            }
-        })
         setMsgText('')
     }
 
-    // TODO: messages are dissappearing when switching pages
-
-    user.socket.on('sendMessagesToAll', (messageDTOs: MessageDTO[]) => {
-        const messages = messageDTOs.map((m) => {
-            return new Message({ ...m })
-        })
-        setReceivedMessages(messages)
-    })
-
     return (
-        <main className="flex h-full w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
-            <h1 className="pb-4 text-center text-2xl text-black">
-                Welcome to the chat, {user.name}!
-            </h1>
-            <section className="relative flex h-full max-h-[44rem] w-full flex-col rounded-xl bg-white sm:w-[26rem]">
+        <main className="flex min-h-screen w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
+            <div className="mb-4 max-w-[30rem] text-center">
+                <h1 className="text-2xl text-black">
+                    Welcome to the room {room.name}, {user.name}!
+                </h1>
+                <p>{room.description}</p>
+            </div>
+            <section className="relative flex h-full min-h-[44rem] w-full flex-col rounded-xl bg-white sm:w-[26rem]">
                 <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-4">
                     {receivedMessages.map((msg, id) => (
                         <MessageCard

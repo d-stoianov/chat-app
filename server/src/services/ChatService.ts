@@ -1,14 +1,22 @@
-import { Socket } from 'socket.io'
+import { Server as SocketServer, Socket } from 'socket.io'
 
 import RoomService from '@/services/RoomService'
-import { RoomDTO } from '@/types/Room'
+import { RoomDTO, RoomCreateDTO } from '@/types/Room'
 import User from '@/types/User'
 
 class ChatService {
     private roomService = new RoomService()
 
+    private io: SocketServer
+
+    constructor(io: SocketServer) {
+        this.io = io
+    }
+
     public handleRoomEvents(socket: Socket) {
-        socket.on('createRoom', (creator: User, room: RoomDTO) => {
+        // TODO make room events to not have user in parameter. map users with socket id
+
+        socket.on('createRoom', (creator: User, room: RoomCreateDTO) => {
             const roomId = this.roomService.createRoom(
                 room.name,
                 room.description,
@@ -16,35 +24,34 @@ class ChatService {
             )
             socket.join(roomId)
 
-            socket.emit('roomCreated', {id: roomId, ...room})
+            const roomDTO: RoomDTO = { id: roomId, ...room }
+            socket.emit('roomCreated', roomDTO)
+
+            // TODO: later send only new created room not the whole list
+            const roomsSummaries = this.roomService.getRoomsSummaries()
+            this.io.emit('updateRoomList', roomsSummaries)
         })
 
-        socket.on('joinRoom', (roomName: string, user: User) => {
-            const room = this.roomService.getRoomByName(roomName)
-            if (room) {
-                this.roomService.joinRoom(room.id, user)
-                socket.join(roomName)
-            }
+        socket.on('requestRoomsSummaries', () => {
+            const roomsSummaries = this.roomService.getRoomsSummaries()
+            this.io.emit('updateRoomList', roomsSummaries)
         })
 
-        socket.on('leaveRoom', (roomName: string) => {
-            const room = this.roomService.getRoomByName(roomName)
-            if (room) {
-                this.roomService.deleteRoom(room.id)
-                socket.leave(roomName)
-            }
+        socket.on('joinRoom', (roomId: string, user: User) => {
+            this.roomService.joinRoom(roomId, user)
+            socket.join(roomId)
+
+            const roomsSummaries = this.roomService.getRoomsSummaries()
+            this.io.emit('updateRoomList', roomsSummaries)
         })
 
-        socket.on('deleteRoom', (roomName: string) => {
-            const room = this.roomService.getRoomByName(roomName)
-            if (room) {
-                this.roomService.deleteRoom(room.id)
-                socket.leave(roomName)
-            }
-        })
+        socket.on('leaveRoom', (roomId: string, user: User) => {
+            this.roomService.leaveRoom(roomId, user)
+            socket.leave(roomId)
 
-        // TODO: separate socket disconnection and chat disconnection
-        socket.on('leaveRoom', () => {})
+            const roomsSummaries = this.roomService.getRoomsSummaries()
+            this.io.emit('updateRoomList', roomsSummaries)
+        })
     }
 }
 

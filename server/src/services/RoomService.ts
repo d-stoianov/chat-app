@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import Room from '@/types/Room'
 import User from '@/types/User'
-import MessageService from '@/services/MessageService'
+import { Room, RoomSummaryDTO } from '@/types/Room'
 
 class RoomService {
     // roomId: Room
@@ -29,6 +28,13 @@ class RoomService {
         const roomToJoin = this.rooms.get(roomId)
 
         if (roomToJoin) {
+            const userExists = roomToJoin.users.find(
+                (u) => u.name === user.name
+            )
+            if (userExists) {
+                return false
+            }
+
             roomToJoin.users.push(user)
             return true
         }
@@ -44,6 +50,11 @@ class RoomService {
                 (u) => u.name !== user.name
             )
             roomToLeave.users = newUsers
+
+            if (roomToLeave.users.length === 0) {
+                this.deleteRoom(roomId)
+            }
+
             return true
         }
 
@@ -61,6 +72,21 @@ class RoomService {
             }
         }
         return undefined
+    }
+
+    public getRoomsSummaries(): RoomSummaryDTO[] {
+        const rooms = Array.from(this.rooms.values())
+
+        const roomsSummaries = rooms.map((r) => {
+            const roomSummary: RoomSummaryDTO = {
+                name: r.name,
+                description: r.description,
+                userCount: r.users.length,
+            }
+            return roomSummary
+        })
+
+        return roomsSummaries
     }
 }
 

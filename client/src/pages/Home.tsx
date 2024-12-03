@@ -17,14 +17,8 @@ const Home = () => {
         const skt = io('localhost:3000')
         const user = new User(name, skt)
 
-        skt.emit('join', user.name, (response: string) => {
-            if (response === 'success') {
-                login(user)
-                navigate('/rooms')
-            } else {
-                console.error('Failed to join')
-            }
-        })
+        login(user)
+        navigate('/rooms')
     }
 
     return (
