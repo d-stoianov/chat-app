@@ -1,40 +1,21 @@
-import { Socket, Server as SocketServer } from 'socket.io'
-
-import UserService from '@/services/UserService'
 import Message from '@/types/Message'
+import User from '@/types/User'
 
 class MessageService {
     private messages: Message[] = []
-    private io: SocketServer
-    private userService!: UserService
 
-    constructor(io: SocketServer) {
-        this.io = io
-    }
-
-    public setUserService(userService: UserService) {
-        this.userService = userService
-    }
-
-    public sendMessage(
-        socket: Socket,
-        msgText: string,
-        cb: (response: string) => void
-    ) {
+    public sendMessage(sender: User, msgText: string): boolean {
         if (msgText.length > 0) {
             const message = {
-                sender: this.userService.getUser(socket.id)?.name ?? socket.id,
+                sender: sender.name,
                 text: msgText,
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
             }
             this.messages.push(message)
-            cb('success')
-
-            this.io.emit('sendMessagesToAll', this.messages)
-        } else {
-            console.error(`msg text: ${msgText} is not valid`)
-            cb('fail')
+            return true
         }
+        console.error(`msg text: ${msgText} is not valid`)
+        return false
     }
 
     public getAllMessages(): Message[] {

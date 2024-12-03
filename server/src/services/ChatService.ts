@@ -1,44 +1,50 @@
 import { Socket } from 'socket.io'
-import { Server as SocketServer } from 'socket.io'
 
-import MessageService from '@/services/MessageService'
-import UserService from '@/services/UserService'
+import RoomService from '@/services/RoomService'
+import { RoomDTO } from '@/types/Room'
+import User from '@/types/User'
 
 class ChatService {
-    private io: SocketServer
+    private roomService = new RoomService()
 
-    private userService: UserService
-    private messageService: MessageService
+    public handleRoomEvents(socket: Socket) {
+        socket.on('createRoom', (creator: User, room: RoomDTO) => {
+            const roomId = this.roomService.createRoom(
+                room.name,
+                room.description,
+                creator
+            )
+            socket.join(roomId)
 
-    constructor(io: SocketServer) {
-        this.io = io
+            socket.emit('roomCreated', {id: roomId, ...room})
+        })
 
-        this.userService = new UserService(this.io)
-        this.messageService = new MessageService(this.io)
+        socket.on('joinRoom', (roomName: string, user: User) => {
+            const room = this.roomService.getRoomByName(roomName)
+            if (room) {
+                this.roomService.joinRoom(room.id, user)
+                socket.join(roomName)
+            }
+        })
 
-        // inject dependencies after creating instances
-        this.userService.setMessageService(this.messageService)
-        this.messageService.setUserService(this.userService)
-    }
+        socket.on('leaveRoom', (roomName: string) => {
+            const room = this.roomService.getRoomByName(roomName)
+            if (room) {
+                this.roomService.deleteRoom(room.id)
+                socket.leave(roomName)
+            }
+        })
 
-    public handleUserEvents(socket: Socket) {
-        socket.on('join', (name: string, cb: (response: string) => void) => {
-            this.userService.joinUser(socket, name, cb)
+        socket.on('deleteRoom', (roomName: string) => {
+            const room = this.roomService.getRoomByName(roomName)
+            if (room) {
+                this.roomService.deleteRoom(room.id)
+                socket.leave(roomName)
+            }
         })
 
         // TODO: separate socket disconnection and chat disconnection
-        socket.on('disconnect', () => {
-            this.userService.disconnectUser(socket)
-        })
-    }
-
-    public handleMessageEvents(socket: Socket) {
-        socket.on(
-            'sendMsg',
-            (msgText: string, cb: (response: string) => void) => {
-                this.messageService.sendMessage(socket, msgText, cb)
-            }
-        )
+        socket.on('leaveRoom', () => {})
     }
 }
 

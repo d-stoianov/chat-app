@@ -4,11 +4,10 @@ import ChatService from '@/services/ChatService'
 const httpServer = createHTTPServer()
 const io = creatSocketServer(httpServer)
 
-const chatService = new ChatService(io)
+const chatService = new ChatService()
 
 io.on('connection', (socket) => {
     console.log(`new connection with socket id: ${socket.id}`)
 
-    chatService.handleUserEvents(socket)
-    chatService.handleMessageEvents(socket)
+    chatService.handleRoomEvents(socket)
 })
