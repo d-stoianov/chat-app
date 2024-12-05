@@ -38,11 +38,16 @@ class ChatService {
         })
 
         socket.on('joinRoom', (roomId: string, user: User) => {
-            this.roomService.joinRoom(roomId, user)
-            socket.join(roomId)
+            const hasJoined = this.roomService.joinRoom(roomId, user)
 
-            const roomsSummaries = this.roomService.getRoomsSummaries()
-            this.io.emit('updateRoomList', roomsSummaries)
+            if (hasJoined) {
+                socket.join(roomId)
+
+                const roomsSummaries = this.roomService.getRoomsSummaries()
+                this.io.emit('updateRoomList', roomsSummaries)
+            } else {
+                socket.emit('failedToJoin')
+            }
         })
 
         socket.on('leaveRoom', (roomId: string, user: User) => {

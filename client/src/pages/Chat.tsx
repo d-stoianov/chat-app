@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react'
 import { useUser } from '@/context/UserContext'
 import { Message } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { RoomDTO } from '@/entities/Room'
 
 const Chat = () => {
     const { user } = useUser()
 
+    const navigate = useNavigate()
     const location = useLocation()
 
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
@@ -20,6 +21,12 @@ const Chat = () => {
 
     useEffect(() => {
         user.socket.emit('joinRoom', room.id, { name: user.name })
+
+        user.socket.on('failedToJoin', () => {
+            navigate('/rooms', {
+                replace: true,
+            })
+        })
 
         // when user leaves the page emit leave room event
         return () => {

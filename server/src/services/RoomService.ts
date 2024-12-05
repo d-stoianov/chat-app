@@ -32,7 +32,7 @@ class RoomService {
                 (u) => u.name === user.name
             )
             if (userExists) {
-                return false
+                return true
             }
 
             roomToJoin.users.push(user)
