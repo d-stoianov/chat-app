@@ -11,7 +11,7 @@ const AppRoutes = () => {
             <Route path="/" index element={<Home />} />
             <Route element={<ProtectedRoute />}>
                 <Route path="/rooms" element={<Rooms />} />
-                <Route path="/room/:id" element={<Chat />} />
+                <Route path="/room/:roomId" element={<Chat />} />
             </Route>
         </Routes>
     )

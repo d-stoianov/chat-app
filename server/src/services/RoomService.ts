@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import User from '@/types/User'
-import { Room, RoomSummaryDTO } from '@/types/Room'
+import { Room, RoomDTO, RoomSummaryDTO } from '@/types/Room'
 
 class RoomService {
     // roomId: Room
@@ -74,11 +74,16 @@ class RoomService {
         return undefined
     }
 
+    public getRoomById(id: string): Room | undefined {
+        return this.rooms.get(id)
+    }
+
     public getRoomsSummaries(): RoomSummaryDTO[] {
         const rooms = Array.from(this.rooms.values())
 
         const roomsSummaries = rooms.map((r) => {
             const roomSummary: RoomSummaryDTO = {
+                id: r.id,
                 name: r.name,
                 description: r.description,
                 userCount: r.users.length,

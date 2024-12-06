@@ -69,9 +69,7 @@ const Rooms = () => {
                                 room
                             )
                             user.socket.on('roomCreated', (room: RoomDTO) => {
-                                navigate(`/room/${room.id}`, {
-                                    state: room,
-                                })
+                                navigate(`/room/${room.id}`)
                             })
                         }}
                     />

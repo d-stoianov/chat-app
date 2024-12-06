@@ -1,26 +1,34 @@
 import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router'
 
 import { useUser } from '@/context/UserContext'
 import { Message } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
-import { useLocation, useNavigate } from 'react-router'
-import { RoomDTO } from '@/entities/Room'
+import { Room } from '@/entities/Room'
 
 const Chat = () => {
+    const navigate = useNavigate()
+
     const { user } = useUser()
 
-    const navigate = useNavigate()
-    const location = useLocation()
+    const { roomId } = useParams()
+    const [room, setRoom] = useState<Room | null>(null)
 
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
     const [msgText, setMsgText] = useState<string>('')
 
-    if (!user) {
+    if (!user || !roomId) {
         return
     }
 
     useEffect(() => {
-        user.socket.emit('joinRoom', room.id, { name: user.name })
+        user.socket.emit('joinRoom', roomId, {
+            name: user.name,
+        })
+
+        user.socket.on('updateRoom', (room: Room) => {
+            setRoom(room)
+        })
 
         user.socket.on('failedToJoin', () => {
             navigate('/rooms', {
@@ -30,15 +38,22 @@ const Chat = () => {
 
         // when user leaves the page emit leave room event
         return () => {
-            user.socket.emit('leaveRoom', room.id, { name: user.name })
+            user.socket.emit('leaveRoom', roomId, { name: user.name })
+
+            // do a cleanup
+            user.socket.off('joinRoom')
+            user.socket.off('updateRoom')
+            user.socket.off('failedToJoin')
         }
     }, [])
-
-    const room: RoomDTO = location.state
 
     const onSend = (e: React.FormEvent) => {
         e.preventDefault()
         setMsgText('')
+    }
+
+    if (!room) {
+        return <>Loading..</>
     }
 
     return (
@@ -50,6 +65,8 @@ const Chat = () => {
                 <p>{room.description}</p>
             </div>
             <section className="relative flex h-full min-h-[44rem] w-full flex-col rounded-xl bg-white sm:w-[26rem]">
+                <p>Users: {room.users.map((u) => u.name).join(', ')}</p>
+
                 <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-4">
                     {receivedMessages.map((msg, id) => (
                         <MessageCard
@@ -59,6 +76,7 @@ const Chat = () => {
                         />
                     ))}
                 </div>
+
                 <form
                     className="m-4 flex h-[5.5rem] flex-col justify-between rounded-xl bg-lightGray p-2"
                     onSubmit={onSend}

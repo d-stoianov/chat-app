@@ -43,6 +43,9 @@ class ChatService {
             if (hasJoined) {
                 socket.join(roomId)
 
+                const room = this.roomService.getRoomById(roomId)
+                this.io.to(roomId).emit('updateRoom', room)
+
                 const roomsSummaries = this.roomService.getRoomsSummaries()
                 this.io.emit('updateRoomList', roomsSummaries)
             } else {
@@ -53,6 +56,9 @@ class ChatService {
         socket.on('leaveRoom', (roomId: string, user: User) => {
             this.roomService.leaveRoom(roomId, user)
             socket.leave(roomId)
+
+            const room = this.roomService.getRoomById(roomId)
+            this.io.to(roomId).emit('updateRoom', room)
 
             const roomsSummaries = this.roomService.getRoomsSummaries()
             this.io.emit('updateRoomList', roomsSummaries)
