@@ -1,7 +1,10 @@
-interface Message {
-    sender: string
+import User from "@/types/User"
+
+export interface MessageCreateDTO {
+    sender: User
     text: string
-    date: string
 }
 
-export default Message
+export interface Message extends MessageCreateDTO {
+    date: string
+}

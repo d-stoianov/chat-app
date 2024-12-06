@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router'
 import { useUser } from '@/context/UserContext'
 import { Message } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
-import { Room } from '@/entities/Room'
+import { RoomChatDTO } from '@/entities/Room'
 
 const Chat = () => {
     const navigate = useNavigate()
@@ -12,7 +12,7 @@ const Chat = () => {
     const { user } = useUser()
 
     const { roomId } = useParams()
-    const [room, setRoom] = useState<Room | null>(null)
+    const [room, setRoom] = useState<RoomChatDTO | null>(null)
 
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
     const [msgText, setMsgText] = useState<string>('')
@@ -26,7 +26,7 @@ const Chat = () => {
             name: user.name,
         })
 
-        user.socket.on('updateRoom', (room: Room) => {
+        user.socket.on('updateRoom', (room: RoomChatDTO) => {
             setRoom(room)
         })
 
@@ -72,7 +72,7 @@ const Chat = () => {
                         <MessageCard
                             key={id}
                             msg={msg}
-                            isMirrored={msg.sender === user.name}
+                            isMirrored={msg.sender.name === user.name}
                         />
                     ))}
                 </div>

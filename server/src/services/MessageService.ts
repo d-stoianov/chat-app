@@ -1,4 +1,4 @@
-import Message from '@/types/Message'
+import { Message } from '@/types/Message'
 import User from '@/types/User'
 
 class MessageService {
@@ -7,7 +7,7 @@ class MessageService {
     public sendMessage(sender: User, msgText: string): boolean {
         if (msgText.length > 0) {
             const message = {
-                sender: sender.name,
+                sender: sender,
                 text: msgText,
                 date: new Date().toISOString(),
             }

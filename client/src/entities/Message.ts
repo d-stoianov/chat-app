@@ -1,17 +1,19 @@
-interface MessageI {
-    sender: string
-    text: string
-    date: Date
-}
+import User from '@/entities/User'
 
 export interface MessageDTO {
-    sender: string
+    sender: User
     text: string
     date: string
 }
 
+interface MessageI {
+    sender: User
+    text: string
+    date: Date
+}
+
 export class Message implements MessageI {
-    public sender: string
+    public sender: User
     public text: string
     public date: Date
 

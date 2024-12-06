@@ -43,8 +43,8 @@ class ChatService {
             if (hasJoined) {
                 socket.join(roomId)
 
-                const room = this.roomService.getRoomById(roomId)
-                this.io.to(roomId).emit('updateRoom', room)
+                const roomChatDTO = this.roomService.getRoomChatDTOById(roomId)
+                this.io.to(roomId).emit('updateRoom', roomChatDTO)
 
                 const roomsSummaries = this.roomService.getRoomsSummaries()
                 this.io.emit('updateRoomList', roomsSummaries)
@@ -57,8 +57,8 @@ class ChatService {
             this.roomService.leaveRoom(roomId, user)
             socket.leave(roomId)
 
-            const room = this.roomService.getRoomById(roomId)
-            this.io.to(roomId).emit('updateRoom', room)
+            const roomChatDTO = this.roomService.getRoomChatDTOById(roomId)
+            this.io.to(roomId).emit('updateRoom', roomChatDTO)
 
             const roomsSummaries = this.roomService.getRoomsSummaries()
             this.io.emit('updateRoomList', roomsSummaries)

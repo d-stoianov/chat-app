@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import User from '@/types/User'
-import { Room, RoomDTO, RoomSummaryDTO } from '@/types/Room'
+import { Room, RoomChatDTO, RoomSummaryDTO } from '@/types/Room'
+import MessageService from '@/services/MessageService'
+import { MessageCreateDTO, Message } from '@/types/Message'
 
 class RoomService {
     // roomId: Room
@@ -18,6 +20,7 @@ class RoomService {
             name,
             description,
             users: [creator],
+            messageService: new MessageService(),
         }
         this.rooms.set(id, room)
 
@@ -65,17 +68,41 @@ class RoomService {
         return this.rooms.delete(roomId)
     }
 
-    public getRoomByName(name: string): Room | undefined {
-        for (const room of this.rooms.values()) {
-            if (room.name === name) {
-                return room
+    public getRoomChatDTOById(id: string): RoomChatDTO | undefined {
+        const room = this.rooms.get(id)
+
+        if (room) {
+            const roomChatDTO: RoomChatDTO = {
+                id: room.id,
+                name: room.name,
+                description: room.description,
+                users: room.users,
             }
+
+            return roomChatDTO
         }
+
         return undefined
     }
 
-    public getRoomById(id: string): Room | undefined {
-        return this.rooms.get(id)
+    public sendMessageToRoom(id: string, msg: MessageCreateDTO): boolean {
+        const room = this.rooms.get(id)
+
+        if (room) {
+            return room.messageService.sendMessage(msg.sender, msg.text)
+        }
+
+        return false
+    }
+
+    public getRoomMessages(id: string): Message[] | undefined {
+        const room = this.rooms.get(id)
+
+        if (room) {
+            return room.messageService.getAllMessages()
+        }
+
+        return undefined
     }
 
     public getRoomsSummaries(): RoomSummaryDTO[] {

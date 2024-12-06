@@ -1,3 +1,4 @@
+import MessageService from '@/services/MessageService'
 import User from '@/types/User'
 
 export interface RoomCreateDTO {
@@ -13,6 +14,11 @@ export interface RoomSummaryDTO extends RoomDTO {
     userCount: number
 }
 
+export interface RoomChatDTO extends RoomDTO {
+    users: User[]
+}
+
 export interface Room extends RoomDTO {
     users: User[]
+    messageService: MessageService
 }

@@ -1,4 +1,4 @@
-import User from "@/entities/User"
+import User from '@/entities/User'
 
 export interface RoomCreateDTO {
     name: string
@@ -13,6 +13,6 @@ export interface RoomSummaryDTO extends RoomDTO {
     userCount: number
 }
 
-export interface Room extends RoomDTO {
+export interface RoomChatDTO extends RoomDTO {
     users: User[]
 }
