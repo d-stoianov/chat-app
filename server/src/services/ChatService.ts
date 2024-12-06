@@ -99,6 +99,32 @@ class ChatService {
             const roomsSummaries = this.roomService.getRoomsSummaries()
             this.io.emit('updateRoomList', roomsSummaries)
         })
+
+        socket.on('disconnect', () => {
+            const user = this.userService.getUser(socket)
+            if (!user) {
+                console.error(
+                    `Couldn't find user with the socketId: ${socket.id}`
+                )
+                return
+            }
+
+            const room = this.roomService.getRoomByUser(user)
+
+            if (!room) {
+                console.error(`Couldn't find room with this user: ${user.name}`)
+                return
+            }
+
+            this.roomService.leaveRoom(room.id, user)
+            socket.leave(room.id)
+
+            const roomChatDTO = this.roomService.getRoomChatDTOById(room.id)
+            this.io.to(room.id).emit('updateRoom', roomChatDTO)
+
+            const roomsSummaries = this.roomService.getRoomsSummaries()
+            this.io.emit('updateRoomList', roomsSummaries)
+        })
     }
 }
 

@@ -68,6 +68,16 @@ class RoomService {
         return this.rooms.delete(roomId)
     }
 
+    public getRoomByUser(user: User): Room | undefined {
+        for (const r of this.rooms.values()) {
+            if (r.users.map((u) => u.name).includes(user.name)) {
+                return r
+            }
+        }
+
+        return undefined
+    }
+
     public getRoomChatDTOById(id: string): RoomChatDTO | undefined {
         const room = this.rooms.get(id)
 
