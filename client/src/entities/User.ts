@@ -1,5 +1,9 @@
 import { Socket } from 'socket.io-client'
 
+export interface UserDTO {
+    name: string
+}
+
 interface UserI {
     socket: Socket
     name: string

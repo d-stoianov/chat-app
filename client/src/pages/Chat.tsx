@@ -22,9 +22,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-        user.socket.emit('joinRoom', roomId, {
-            name: user.name,
-        })
+        user.socket.emit('joinRoom', roomId)
 
         user.socket.on('updateRoom', (room: RoomChatDTO) => {
             setRoom(room)

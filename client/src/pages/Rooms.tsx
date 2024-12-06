@@ -61,13 +61,7 @@ const Rooms = () => {
                 <Modal onClose={() => setShowCreateRoomForm(false)}>
                     <CreateRoomForm
                         onSubmit={(room) => {
-                            user.socket.emit(
-                                'createRoom',
-                                {
-                                    name: user.name,
-                                },
-                                room
-                            )
+                            user.socket.emit('createRoom', room)
                             user.socket.on('roomCreated', (room: RoomDTO) => {
                                 navigate(`/room/${room.id}`)
                             })

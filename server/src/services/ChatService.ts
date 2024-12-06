@@ -3,8 +3,10 @@ import { Server as SocketServer, Socket } from 'socket.io'
 import RoomService from '@/services/RoomService'
 import { RoomDTO, RoomCreateDTO } from '@/types/Room'
 import User from '@/types/User'
+import UserService from '@/services/UserService'
 
 class ChatService {
+    private userService = new UserService()
     private roomService = new RoomService()
 
     private io: SocketServer
@@ -13,10 +15,27 @@ class ChatService {
         this.io = io
     }
 
-    public handleRoomEvents(socket: Socket) {
-        // TODO make room events to not have user in parameter. map users with socket id
+    public handleUserEvents(socket: Socket) {
+        socket.on('login', (u: User) => {
+            this.userService.addUser(socket, u)
+        })
 
-        socket.on('createRoom', (creator: User, room: RoomCreateDTO) => {
+        socket.on('logout', () => {
+            this.userService.removeUser(socket)
+        })
+    }
+
+    public handleRoomEvents(socket: Socket) {
+        socket.on('createRoom', (room: RoomCreateDTO) => {
+            const creator = this.userService.getUser(socket)
+
+            if (!creator) {
+                console.error(
+                    `Couldn't find user with the socketId: ${socket.id}`
+                )
+                return
+            }
+
             const roomId = this.roomService.createRoom(
                 room.name,
                 room.description,
@@ -37,7 +56,16 @@ class ChatService {
             this.io.emit('updateRoomList', roomsSummaries)
         })
 
-        socket.on('joinRoom', (roomId: string, user: User) => {
+        socket.on('joinRoom', (roomId: string) => {
+            const user = this.userService.getUser(socket)
+
+            if (!user) {
+                console.error(
+                    `Couldn't find user with the socketId: ${socket.id}`
+                )
+                return
+            }
+
             const hasJoined = this.roomService.joinRoom(roomId, user)
 
             if (hasJoined) {
@@ -53,7 +81,15 @@ class ChatService {
             }
         })
 
-        socket.on('leaveRoom', (roomId: string, user: User) => {
+        socket.on('leaveRoom', (roomId: string) => {
+            const user = this.userService.getUser(socket)
+            if (!user) {
+                console.error(
+                    `Couldn't find user with the socketId: ${socket.id}`
+                )
+                return
+            }
+
             this.roomService.leaveRoom(roomId, user)
             socket.leave(roomId)
 

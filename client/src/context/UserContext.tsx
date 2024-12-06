@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 
-import User from '@/entities/User'
+import User, { UserDTO } from '@/entities/User'
 
 interface UserContext {
     user: User | null
@@ -18,10 +18,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null)
 
     const login = (u: User) => {
+        const userDTO: UserDTO = {
+            name: u.name,
+        }
+        u.socket.emit('login', userDTO)
         setUser(u)
     }
 
     const logout = () => {
+        user?.socket.emit('logout')
         setUser(null)
     }
 

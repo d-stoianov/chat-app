@@ -9,5 +9,6 @@ const chatService = new ChatService(io)
 io.on('connection', (socket) => {
     console.log(`new connection with socket id: ${socket.id}`)
 
+    chatService.handleUserEvents(socket)
     chatService.handleRoomEvents(socket)
 })
