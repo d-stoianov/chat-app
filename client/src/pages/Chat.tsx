@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { useUser } from '@/context/UserContext'
-import { Message } from '@/entities/Message'
+import { Message, MessageDTO } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
 import { RoomChatDTO } from '@/entities/Room'
 
@@ -28,6 +28,11 @@ const Chat = () => {
             setRoom(room)
         })
 
+        user.socket.on('updateRoomChat', (messagesDTO: MessageDTO[]) => {
+            const messages = messagesDTO.map((m) => new Message(m))
+            setReceivedMessages(messages)
+        })
+
         user.socket.on('failedToJoin', () => {
             navigate('/rooms', {
                 replace: true,
@@ -41,12 +46,16 @@ const Chat = () => {
             // do a cleanup
             user.socket.off('joinRoom')
             user.socket.off('updateRoom')
+            user.socket.off('updateRoomChat')
             user.socket.off('failedToJoin')
         }
     }, [])
 
     const onSend = (e: React.FormEvent) => {
         e.preventDefault()
+
+        user.socket.emit('sendMessageToRoom', roomId, msgText)
+
         setMsgText('')
     }
 
