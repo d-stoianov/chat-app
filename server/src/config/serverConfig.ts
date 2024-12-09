@@ -1,6 +1,9 @@
 import { createServer, Server as HTTPServer } from 'http'
 import { Server as SocketServer } from 'socket.io'
 
+import dotenv from 'dotenv'
+dotenv.config()
+
 const PORT = 3000
 
 export const createHTTPServer = (): HTTPServer => {
@@ -21,7 +24,7 @@ export const createHTTPServer = (): HTTPServer => {
 export const creatSocketServer = (httpServer: HTTPServer): SocketServer => {
     const io = new SocketServer(httpServer, {
         cors: {
-            origin: 'http://localhost:5173',
+            origin: process.env.ORIGIN_URL,
         },
     })
 

@@ -14,7 +14,7 @@ const Home = () => {
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        const skt = io('localhost:3000')
+        const skt = io(import.meta.env.VITE_SERVER_URL)
         const user = new User(name, skt)
 
         login(user)
