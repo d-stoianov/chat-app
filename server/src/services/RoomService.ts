@@ -13,7 +13,7 @@ class RoomService {
         name: string,
         description: string = '',
         creator: User
-    ): string {
+    ): Room {
         const id = uuidv4()
         const room: Room = {
             id,
@@ -24,7 +24,7 @@ class RoomService {
         }
         this.rooms.set(id, room)
 
-        return id
+        return room
     }
 
     public joinRoom(roomId: string, user: User): boolean {
@@ -95,14 +95,17 @@ class RoomService {
         return undefined
     }
 
-    public sendMessageToRoom(id: string, msg: MessageCreateDTO): boolean {
+    public sendMessageToRoom(
+        id: string,
+        msg: MessageCreateDTO
+    ): Message | undefined {
         const room = this.rooms.get(id)
 
         if (room) {
             return room.messageService.sendMessage(msg.sender, msg.text)
         }
 
-        return false
+        return undefined
     }
 
     public getRoomMessages(id: string): Message[] | undefined {
@@ -115,17 +118,21 @@ class RoomService {
         return undefined
     }
 
+    public getRoomSummary(r: Room): RoomSummaryDTO {
+        const roomSummary: RoomSummaryDTO = {
+            id: r.id,
+            name: r.name,
+            description: r.description,
+            userCount: r.users.length,
+        }
+        return roomSummary
+    }
+
     public getRoomsSummaries(): RoomSummaryDTO[] {
         const rooms = Array.from(this.rooms.values())
 
         const roomsSummaries = rooms.map((r) => {
-            const roomSummary: RoomSummaryDTO = {
-                id: r.id,
-                name: r.name,
-                description: r.description,
-                userCount: r.users.length,
-            }
-            return roomSummary
+            return this.getRoomSummary(r)
         })
 
         return roomsSummaries

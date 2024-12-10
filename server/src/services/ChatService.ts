@@ -27,7 +27,7 @@ class ChatService {
     }
 
     public handleRoomEvents(socket: Socket) {
-        socket.on('createRoom', (room: RoomCreateDTO) => {
+        socket.on('createRoom', (roomCreateDTO: RoomCreateDTO) => {
             const creator = this.userService.getUser(socket)
 
             if (!creator) {
@@ -37,19 +37,22 @@ class ChatService {
                 return
             }
 
-            const roomId = this.roomService.createRoom(
-                room.name,
-                room.description,
+            const room = this.roomService.createRoom(
+                roomCreateDTO.name,
+                roomCreateDTO.description,
                 creator
             )
-            socket.join(roomId)
+            socket.join(room.id)
 
-            const roomDTO: RoomDTO = { id: roomId, ...room }
+            const roomDTO: RoomDTO = {
+                id: room.id,
+                name: room.name,
+                description: room.description,
+            }
             socket.emit('roomCreated', roomDTO)
 
-            // TODO: later send only new created room not the whole list
-            const roomsSummaries = this.roomService.getRoomsSummaries()
-            this.io.emit('updateRoomList', roomsSummaries)
+            const roomSummary = this.roomService.getRoomSummary(room)
+            this.io.emit('updateRoomCreated', roomSummary)
         })
 
         socket.on('requestRoomsSummaries', () => {
@@ -116,14 +119,14 @@ class ChatService {
                 return
             }
 
-            const msg: MessageCreateDTO = {
+            const msgDTO: MessageCreateDTO = {
                 sender: user,
                 text: messageText,
             }
-            this.roomService.sendMessageToRoom(roomId, msg)
-
-            const messages = this.roomService.getRoomMessages(roomId)
-            this.io.to(roomId).emit('updateRoomChat', messages)
+            const msg = this.roomService.sendMessageToRoom(roomId, msgDTO)
+            if (msg) {
+                this.io.to(roomId).emit('updateRoomChatWithNewMessage', msg)
+            }
         })
 
         socket.on('disconnect', () => {
