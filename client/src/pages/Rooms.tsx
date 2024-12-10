@@ -26,8 +26,13 @@ const Rooms = () => {
             setRooms(rooms)
         })
 
+        user.socket.on('updateRoomCreated', (room: RoomSummaryDTO) => {
+            setRooms((prevRooms) => [...prevRooms, room])
+        })
+
         return () => {
             user.socket.off('updateRoomList')
+            user.socket.off('updateRoomCreated')
         }
     }, [])
 

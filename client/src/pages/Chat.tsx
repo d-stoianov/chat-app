@@ -33,6 +33,16 @@ const Chat = () => {
             setReceivedMessages(messages)
         })
 
+        user.socket.on(
+            'updateRoomChatWithNewMessage',
+            (messageDTO: MessageDTO) => {
+                setReceivedMessages((prevReceivedMessages) => [
+                    ...prevReceivedMessages,
+                    new Message(messageDTO),
+                ])
+            }
+        )
+
         user.socket.on('failedToJoin', () => {
             navigate('/rooms', {
                 replace: true,
@@ -46,6 +56,7 @@ const Chat = () => {
             // do a cleanup
             user.socket.off('joinRoom')
             user.socket.off('updateRoom')
+            user.socket.off('updateRoomChatWithNewMessage')
             user.socket.off('updateRoomChat')
             user.socket.off('failedToJoin')
         }
