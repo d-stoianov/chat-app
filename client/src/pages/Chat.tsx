@@ -5,6 +5,8 @@ import { useUser } from '@/context/UserContext'
 import { Message, MessageDTO } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
 import { RoomChatDTO } from '@/entities/Room'
+import Button from '@/components/Button'
+import BaseLayout from '@/layouts/BaseLayout'
 
 const Chat = () => {
     const navigate = useNavigate()
@@ -75,17 +77,23 @@ const Chat = () => {
     }
 
     return (
-        <main className="flex min-h-screen w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
-            <div className="mb-4 max-w-[30rem] text-center">
-                <h1 className="text-2xl text-black">
+        <BaseLayout className="px-8 py-6">
+            <div className="flex min-h-[6rem] flex-col gap-2">
+                <h1 className="text-center text-2xl text-black">
                     Welcome to the room {room.name}, {user.name}!
                 </h1>
-                <p>{room.description}</p>
+                <h2 className="text-md text-center text-black">
+                    <p>{room.description}</p>
+                </h2>
             </div>
-            <section className="relative flex h-full min-h-[44rem] w-full flex-col rounded-xl bg-white sm:w-[26rem]">
-                <p>Users: {room.users.map((u) => u.name).join(', ')}</p>
 
-                <div className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-4">
+            <section className="relative mt-[1rem] flex h-[46rem] w-full flex-col overflow-hidden rounded-xl bg-white sm:h-[60rem] sm:w-[30rem] md:h-[70rem] xl:w-[38rem]">
+                <div className="m-4 rounded-lg border-white bg-lightGray p-2">
+                    <p className="mr-2 inline font-bold">Users:</p>
+                    <span>{room.users.map((u) => u.name).join(', ')}</span>
+                </div>
+
+                <div className="flex h-full flex-grow flex-col gap-2 overflow-y-scroll p-4">
                     {receivedMessages.map((msg, id) => (
                         <MessageCard
                             key={id}
@@ -107,16 +115,16 @@ const Chat = () => {
                         onChange={(e) => setMsgText(e.target.value)}
                     />
                     <div className="flex w-full flex-row">
-                        <button
+                        <Button
                             type="submit"
-                            className="ml-auto rounded-lg bg-black px-5 py-[0.175rem] text-center text-white hover:bg-hoverBlack"
+                            className="ml-auto px-5 py-[0.175rem]"
                         >
                             Send now
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </section>
-        </main>
+        </BaseLayout>
     )
 }
 

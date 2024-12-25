@@ -13,7 +13,7 @@ const MessageCard = ({ msg, isMirrored = false }: MessageProps) => {
             <p className="px-1 text-center">{msg.sender.name}</p>
 
             <div
-                className={`flex max-w-[90%] justify-between gap-2 rounded-xl px-3 py-1 text-black ${isMirrored ? 'bg-lightYellow' : 'bg-lightGray'}`}
+                className={`flex max-w-[90%] justify-between gap-2 rounded-xl px-3 py-1 ${isMirrored ? 'bg-blue-500 text-white' : 'bg-lightGray text-black'}`}
             >
                 <p className="py-1">{msg.text}</p>
                 <p className="self-end text-[0.75rem]">{msg.formattedTime}</p>

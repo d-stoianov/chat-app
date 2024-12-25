@@ -6,7 +6,6 @@ export default {
             colors: {
                 lightYellow: '#F9E4CB',
                 lightGray: '#F2F2F2',
-                hoverBlack: '#2B2B2B',
             },
         },
     },

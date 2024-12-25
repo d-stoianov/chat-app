@@ -4,6 +4,8 @@ import { io } from 'socket.io-client'
 
 import { useUser } from '@/context/UserContext'
 import User from '@/entities/User'
+import Button from '@/components/Button'
+import BaseLayout from '@/layouts/BaseLayout'
 
 const Home = () => {
     const { login } = useUser()
@@ -22,9 +24,9 @@ const Home = () => {
     }
 
     return (
-        <main className="flex h-full w-full flex-col items-center bg-lightGray">
+        <BaseLayout>
             <form
-                className="mt-24 flex w-full flex-col items-center gap-2 px-8 sm:w-[22rem]"
+                className="mt-[4rem] sm:mt-[8rem] flex w-full flex-col items-center gap-2 px-8 sm:w-[22rem]"
                 onSubmit={onSubmit}
             >
                 <input
@@ -34,14 +36,11 @@ const Home = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
-                <button
-                    type="submit"
-                    className="w-full rounded-lg bg-black py-1.5 text-center text-white hover:bg-hoverBlack"
-                >
+                <Button type="submit" className="w-full py-1.5">
                     Chat!
-                </button>
+                </Button>
             </form>
-        </main>
+        </BaseLayout>
     )
 }
 

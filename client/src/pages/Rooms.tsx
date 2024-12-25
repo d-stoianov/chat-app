@@ -6,6 +6,8 @@ import Modal from '@/components/Modal'
 import RoomCard from '@/components/RoomCard'
 import { useUser } from '@/context/UserContext'
 import { RoomDTO, RoomSummaryDTO } from '@/entities/Room'
+import Button from '@/components/Button'
+import BaseLayout from '@/layouts/BaseLayout'
 
 const Rooms = () => {
     const { user } = useUser()
@@ -36,32 +38,33 @@ const Rooms = () => {
         }
     }, [])
 
-    console.log('rooms', rooms)
-
     return (
-        <main className="flex min-h-screen w-full flex-col items-center bg-[#E0E0E0] px-8 py-6">
-            <div className="mb-2 flex flex-col gap-2">
+        <BaseLayout className="px-8 py-6">
+            <div className="flex min-h-[6rem] flex-col gap-2">
                 <h1 className="text-center text-2xl text-black">
                     Welcome to the chat, {user.name}!
                 </h1>
-                <h1 className="text-md text-center text-black">
+                <h2 className="text-md text-center text-black">
                     Fee free to join someone's room or create your own one
-                </h1>
+                </h2>
             </div>
 
-            <section className="h-full min-h-[44rem] w-full overflow-auto rounded-xl bg-white sm:w-[26rem]">
-                <button
+            <section className="mt-[1rem] flex h-[46rem] w-full flex-col overflow-hidden rounded-xl bg-white sm:h-[60rem] sm:w-[30rem] md:h-[70rem] xl:w-[38rem]">
+                <Button
                     onClick={() => setShowCreateRoomForm(true)}
-                    className="m-8 h-[2rem] w-[8rem] rounded-lg bg-blue-500 text-white"
+                    className="m-8 h-[2rem] w-[8rem] flex-none"
                 >
                     Create Room
-                </button>
-                {rooms.map((r, idx) => (
-                    <div key={idx} className="px-8 pb-8">
-                        <RoomCard {...r} />
-                    </div>
-                ))}
+                </Button>
+                <div className="flex-grow overflow-y-scroll">
+                    {rooms.map((r, idx) => (
+                        <div key={idx} className="px-8 pb-8">
+                            <RoomCard {...r} />
+                        </div>
+                    ))}
+                </div>
             </section>
+
             {showCreateRoomForm && (
                 <Modal onClose={() => setShowCreateRoomForm(false)}>
                     <CreateRoomForm
@@ -74,7 +77,7 @@ const Rooms = () => {
                     />
                 </Modal>
             )}
-        </main>
+        </BaseLayout>
     )
 }
 
