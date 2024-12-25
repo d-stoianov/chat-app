@@ -7,7 +7,7 @@ import RoomCard from '@/components/RoomCard'
 import { useUser } from '@/context/UserContext'
 import { RoomDTO, RoomSummaryDTO } from '@/entities/Room'
 import Button from '@/components/Button'
-import BaseLayout from '@/layouts/BaseLayout'
+import ChatLayout from '@/layouts/ChatLayout'
 
 const Rooms = () => {
     const { user } = useUser()
@@ -39,16 +39,10 @@ const Rooms = () => {
     }, [])
 
     return (
-        <BaseLayout className="px-8 py-6">
-            <div className="flex min-h-[6rem] flex-col gap-2">
-                <h1 className="text-center text-2xl text-black">
-                    Welcome to the chat, {user.name}!
-                </h1>
-                <h2 className="text-md text-center text-black">
-                    Fee free to join someone's room or create your own one
-                </h2>
-            </div>
-
+        <ChatLayout
+            heading={`Welcome to the chat, ${user.name}!`}
+            subheading="Feel free to join someone's room or create your own one"
+        >
             <section className="mt-[1rem] flex h-[46rem] w-full flex-col overflow-hidden rounded-xl bg-white sm:h-[60rem] sm:w-[30rem] md:h-[70rem] xl:w-[38rem]">
                 <Button
                     onClick={() => setShowCreateRoomForm(true)}
@@ -77,7 +71,7 @@ const Rooms = () => {
                     />
                 </Modal>
             )}
-        </BaseLayout>
+        </ChatLayout>
     )
 }
 
