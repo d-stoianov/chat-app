@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { useUser } from '@/context/UserContext'
@@ -19,10 +19,13 @@ const Chat = () => {
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
     const [msgText, setMsgText] = useState<string>('')
 
+    const messageContainerRef = useRef<HTMLDivElement>(null)
+
     if (!user || !roomId) {
         return
     }
 
+    // socket events
     useEffect(() => {
         user.socket.emit('joinRoom', roomId)
 
@@ -64,6 +67,26 @@ const Chat = () => {
         }
     }, [])
 
+    // scroll to the end on new messages and if user is at the bottom of the container
+    useEffect(() => {
+        const container = messageContainerRef.current
+        if (!container) {
+            return
+        }
+
+        // aproximately one message gap to be scrolled down
+        const THRESHOLD = 150 // px
+        const isAtBottom =
+            container.scrollHeight -
+                container.scrollTop -
+                container.clientHeight <=
+            THRESHOLD
+
+        if (isAtBottom) {
+            container.scrollTop = container.scrollHeight
+        }
+    }, [receivedMessages])
+
     const onSend = (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -83,7 +106,10 @@ const Chat = () => {
                 <span>{room.users.map((u) => u.name).join(', ')}</span>
             </div>
 
-            <div className="flex h-full flex-grow flex-col gap-2 overflow-y-scroll p-4">
+            <div
+                ref={messageContainerRef}
+                className="flex h-full flex-grow flex-col gap-2 overflow-y-scroll p-4"
+            >
                 {receivedMessages.map((msg, id) => (
                     <MessageCard
                         key={id}
