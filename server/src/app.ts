@@ -1,8 +1,8 @@
-import { createHTTPServer, creatSocketServer } from '@/config/serverConfig'
+import { createHTTPServer, createSocketServer } from '@/config/serverConfig'
 import ChatService from '@/services/ChatService'
 
 const httpServer = createHTTPServer()
-const io = creatSocketServer(httpServer)
+const io = createSocketServer()
 
 const chatService = new ChatService(io)
 

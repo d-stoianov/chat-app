@@ -16,7 +16,9 @@ const Home = () => {
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        const skt = io(import.meta.env.VITE_SERVER_URL)
+        const skt = io(import.meta.env.VITE_HTTP_API_URL, {
+            path: `/${import.meta.env.VITE_BASE_URL}/api`,
+        })
         const user = new User(name, skt)
 
         login(user)

@@ -7,7 +7,7 @@ import { UserProvider } from '@/context/UserContext'
 
 createRoot(document.getElementById('root')!).render(
     <UserProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={`/${import.meta.env.VITE_BASE_URL}`}>
             <AppRoutes />
         </BrowserRouter>
     </UserProvider>
