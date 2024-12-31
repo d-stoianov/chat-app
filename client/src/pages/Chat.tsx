@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import { useUser } from '@/context/UserContext'
+import useUser from '@/context/user/useUser'
 import { Message, MessageDTO } from '@/entities/Message'
 import MessageCard from '@/components/MessageCard'
 import { RoomChatDTO } from '@/entities/Room'
@@ -21,12 +21,12 @@ const Chat = () => {
 
     const messageContainerRef = useRef<HTMLDivElement>(null)
 
-    if (!user || !roomId) {
-        return
-    }
-
     // socket events
     useEffect(() => {
+        if (!user) {
+            return
+        }
+
         user.socket.emit('joinRoom', roomId)
 
         user.socket.on('updateRoom', (room: RoomChatDTO) => {
@@ -65,7 +65,7 @@ const Chat = () => {
             user.socket.off('updateRoomChat')
             user.socket.off('failedToJoin')
         }
-    }, [])
+    }, [user, roomId, navigate])
 
     // scroll to the end on new messages and if user is at the bottom of the container
     useEffect(() => {
@@ -86,6 +86,10 @@ const Chat = () => {
             container.scrollTop = container.scrollHeight
         }
     }, [receivedMessages])
+
+    if (!user || !roomId) {
+        return
+    }
 
     const onSend = (e: React.FormEvent) => {
         e.preventDefault()

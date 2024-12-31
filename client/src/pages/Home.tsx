@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { io } from 'socket.io-client'
 
-import { useUser } from '@/context/UserContext'
+import useUser from '@/context/user/useUser'
 import User from '@/entities/User'
 import Button from '@/components/Button'
 import BaseLayout from '@/layouts/BaseLayout'
@@ -16,8 +16,8 @@ const Home = () => {
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        const skt = io(import.meta.env.VITE_HTTP_API_URL, {
-            path: `/${import.meta.env.VITE_BASE_URL}/api`,
+        const skt = io(import.meta.env.VITE_SOCKET_API_URL, {
+            path: import.meta.env.VITE_SOCKET_PATH,
         })
         const user = new User(name, skt)
 
@@ -28,7 +28,7 @@ const Home = () => {
     return (
         <BaseLayout>
             <form
-                className="mt-[4rem] sm:mt-[8rem] flex w-full flex-col items-center gap-2 px-8 sm:w-[22rem]"
+                className="mt-[4rem] flex w-full flex-col items-center gap-2 px-8 sm:mt-[8rem] sm:w-[22rem]"
                 onSubmit={onSubmit}
             >
                 <input

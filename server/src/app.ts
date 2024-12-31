@@ -2,7 +2,7 @@ import { createHTTPServer, createSocketServer } from '@/config/serverConfig'
 import ChatService from '@/services/ChatService'
 
 const httpServer = createHTTPServer()
-const io = createSocketServer()
+const io = createSocketServer(httpServer)
 
 const chatService = new ChatService(io)
 

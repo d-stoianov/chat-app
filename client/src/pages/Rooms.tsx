@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import CreateRoomForm from '@/components/CreateRoomForm'
 import Modal from '@/components/Modal'
 import RoomCard from '@/components/RoomCard'
-import { useUser } from '@/context/UserContext'
+import useUser from '@/context/user/useUser'
 import { RoomDTO, RoomSummaryDTO } from '@/entities/Room'
 import Button from '@/components/Button'
 import ChatLayout from '@/layouts/ChatLayout'
@@ -17,11 +17,11 @@ const Rooms = () => {
 
     const navigate = useNavigate()
 
-    if (!user) {
-        return null
-    }
-
     useEffect(() => {
+        if (!user) {
+            return
+        }
+
         user.socket.emit('requestRoomsSummaries')
 
         user.socket.on('updateRoomList', (rooms: RoomSummaryDTO[]) => {
@@ -36,7 +36,11 @@ const Rooms = () => {
             user.socket.off('updateRoomList')
             user.socket.off('updateRoomCreated')
         }
-    }, [])
+    }, [user])
+
+    if (!user) {
+        return null
+    }
 
     return (
         <ChatLayout
