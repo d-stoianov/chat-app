@@ -4,7 +4,6 @@ import UserContext from '@/context/user/UserContext'
 import User, { UserDTO } from '@/entities/User'
 
 type LoginResponse = 'VALIDATION' | 'EXISTS' | 'SUCCESS'
-type LogoutResponse = 'SUCCESS'
 
 const loginMessages = {
     VALIDATION: 'Validation failed',
@@ -35,23 +34,8 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
-    const logout = async (): Promise<string> => {
-        try {
-            const response = await new Promise<LogoutResponse>((resolve) => {
-                user?.socket.emit('logout', resolve)
-            })
-
-            if (response === 'SUCCESS') {
-                setUser(null)
-            }
-            return ''
-        } catch (error) {
-            return ''
-        }
-    }
-
     return (
-        <UserContext.Provider value={{ user, login, logout }}>
+        <UserContext.Provider value={{ user, login }}>
             {children}
         </UserContext.Provider>
     )

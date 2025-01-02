@@ -24,6 +24,13 @@ class UserService {
         }
         return false
     }
+
+    public logUsers() {
+        console.log('users:')
+        for (const user of this.socketToUserMap.values()) {
+            console.log(user.name)
+        }
+    }
 }
 
 export default UserService
