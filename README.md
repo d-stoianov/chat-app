@@ -1,6 +1,6 @@
 # Chat App
 
-This project is in progress, but you still can check it out [here](http://157.245.78.14).
+This project is in progress, but you still can check it out [here](https://dstoianov.site/chat-app).
 
 <img width="1500" alt="screenshot-1" src="https://github.com/user-attachments/assets/e6105bcf-8d3e-4aa4-90af-6cd498989000" />
 <img width="1500" alt="screenshot-2" src="https://github.com/user-attachments/assets/38956122-716b-4bd8-b5c4-56ff13935429" />
