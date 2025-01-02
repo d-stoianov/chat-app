@@ -6,38 +6,30 @@ import useUser from '@/context/user/useUser'
 import User from '@/entities/User'
 import Button from '@/components/Button'
 import BaseLayout from '@/layouts/BaseLayout'
-import { isNameValid } from '@/utils/validation'
 
 const Home = () => {
     const { login } = useUser()
     const navigate = useNavigate()
 
     const [name, setName] = useState<string>('')
-    const [isValid, setIsValid] = useState<boolean>(true)
 
-    useEffect(() => {
-        if (!isValid && isNameValid(name.trim())) {
-            setIsValid(true)
-        }
-    }, [isValid, name])
+    const [loginMessage, setLoginMessage] = useState<string>('')
+
+    useEffect(() => {}, [loginMessage, name])
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
-        if (!isNameValid(name.trim())) {
-            setIsValid(false)
-            return
-        }
 
         const skt = io(import.meta.env.VITE_SOCKET_API_URL, {
             path: import.meta.env.VITE_SOCKET_PATH,
         })
         const user = new User(name.trim(), skt)
 
-        const isLoggedIn = await login(user)
-        if (isLoggedIn) {
+        const msg = await login(user)
+        if (msg.length === 0) {
             navigate('/rooms')
         }
+        setLoginMessage(msg)
     }
 
     return (
@@ -48,7 +40,7 @@ const Home = () => {
             >
                 <input
                     type="text"
-                    className={`w-full rounded-lg border-2 px-2 py-1.5 outline-none ${!isValid && 'border-red-500'}`}
+                    className={`w-full rounded-lg border-2 px-2 py-1.5 outline-none ${loginMessage.length > 0 && 'border-red-500'}`}
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -56,6 +48,7 @@ const Home = () => {
                 <Button type="submit" className="w-full py-1.5">
                     Chat!
                 </Button>
+                <span className="text-red-500">{loginMessage}</span>
             </form>
         </BaseLayout>
     )

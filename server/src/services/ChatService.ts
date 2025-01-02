@@ -19,16 +19,21 @@ class ChatService {
 
     public handleUserEvents(socket: Socket) {
         socket.on('login', (u: User, cb: (msg: string) => void) => {
-            if (isNameValid(u.name)) {
-                this.userService.addUser(socket, u)
-                cb('success')
+            if (!isNameValid(u.name)) {
+                cb('VALIDATION')
+                return
             }
-            cb('validation failed')
+            if (this.userService.checkIfNameExists(u.name)) {
+                cb('EXISTS')
+                return
+            }
+            this.userService.addUser(socket, u)
+            cb('SUCCESS')
         })
 
         socket.on('logout', (cb: (msg: string) => void) => {
             this.userService.removeUser(socket)
-            cb('success')
+            cb('SUCCESS')
         })
     }
 
