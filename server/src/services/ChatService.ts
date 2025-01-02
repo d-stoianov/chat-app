@@ -5,6 +5,7 @@ import { RoomDTO, RoomCreateDTO } from '@/types/Room'
 import User from '@/types/User'
 import UserService from '@/services/UserService'
 import { MessageCreateDTO } from '@/types/Message'
+import { isNameValid } from '@/validations/userValidations'
 
 class ChatService {
     private userService = new UserService()
@@ -17,12 +18,17 @@ class ChatService {
     }
 
     public handleUserEvents(socket: Socket) {
-        socket.on('login', (u: User) => {
-            this.userService.addUser(socket, u)
+        socket.on('login', (u: User, cb: (msg: string) => void) => {
+            if (isNameValid(u.name)) {
+                this.userService.addUser(socket, u)
+                cb('success')
+            }
+            cb('validation failed')
         })
 
-        socket.on('logout', () => {
+        socket.on('logout', (cb: (msg: string) => void) => {
             this.userService.removeUser(socket)
+            cb('success')
         })
     }
 

@@ -6,17 +6,39 @@ import User, { UserDTO } from '@/entities/User'
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null)
 
-    const login = (u: User) => {
-        const userDTO: UserDTO = {
-            name: u.name,
+    const login = async (user: User): Promise<boolean> => {
+        const userDTO: UserDTO = { name: user.name }
+
+        try {
+            const response = await new Promise<string>((resolve) => {
+                user.socket.emit('login', userDTO, resolve)
+            })
+
+            if (response === 'success') {
+                setUser(user)
+                return true
+            }
+            return false
+        } catch (error) {
+            console.error('login failed:', error)
+            return false
         }
-        u.socket.emit('login', userDTO)
-        setUser(u)
     }
 
-    const logout = () => {
-        user?.socket.emit('logout')
-        setUser(null)
+    const logout = async (): Promise<boolean> => {
+        try {
+            const response = await new Promise<string>((resolve) => {
+                user?.socket.emit('logout', resolve)
+            })
+
+            if (response === 'success') {
+                setUser(null)
+                return true
+            }
+            return false
+        } catch (error) {
+            return false
+        }
     }
 
     return (
