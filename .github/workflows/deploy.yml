@@ -1,0 +1,74 @@
+name: Deploy
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
+
+            - name: Run linter on the Client
+              run: |
+                  cd client
+                  npm ci
+                  npm run lint
+                  npm run build
+
+            - name: Run linter on the Server
+              run: |
+                  cd server
+                  npm ci
+                  npm run lint
+                  npm run build
+
+    deploy:
+        needs: lint
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Deploy to VPS
+              env:
+                  HOST: ${{ secrets.VPS_HOST }}
+                  USER: ${{ secrets.VPS_USER }}
+                  SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+              run: |
+                  echo "$SSH_KEY" > ssh_key
+                  chmod 600 ssh_key
+
+                  ssh -i ssh_key -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+                      cd ~/chat-app
+                      git pull
+                      sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
+                      sudo /sbin/mkswap /var/swap.1
+                      sudo /sbin/swapon /var/swap.1
+
+                      # deploy server code
+                      cd ~/chat-app/server
+                      npm i
+                      npm run build
+                      pm2 delete chat-app
+                      pm2 start npm --name chat-app -- start
+                      pm2 save
+
+                      # deploy client code
+                      cd ~/chat-app/client
+                      npm i
+                      npm run build
+                      rm -rf /var/www/html/chat-app/*
+                      cp -r ~/chat-app/client/dist/* /var/www/html/chat-app
+                      nginx -s reload
+                  EOF
