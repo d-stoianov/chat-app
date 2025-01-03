@@ -66,6 +66,7 @@ const Rooms = () => {
             {showCreateRoomForm && (
                 <Modal onClose={() => setShowCreateRoomForm(false)}>
                     <CreateRoomForm
+                        prefilledRoomName={`${user.name}'s room`}
                         onSubmit={(room) => {
                             user.socket.emit('createRoom', room)
                             user.socket.on('roomCreated', (room: RoomDTO) => {

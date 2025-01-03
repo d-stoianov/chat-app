@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import UserContext from '@/context/user/UserContext'
 import User, { UserDTO } from '@/entities/User'
+import { validateUserName } from '@/utils/validation'
 
 type LoginResponse = 'VALIDATION' | 'EXISTS' | 'SUCCESS'
 
@@ -16,6 +17,11 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = async (user: User): Promise<string> => {
         const userDTO: UserDTO = { name: user.name }
+
+        const isValid = validateUserName(user.name)
+        if (!isValid) {
+            return loginMessages.VALIDATION
+        }
 
         try {
             const response = await new Promise<LoginResponse>((resolve) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { io } from 'socket.io-client'
 
@@ -13,6 +13,7 @@ const Home = () => {
 
     const [name, setName] = useState<string>('')
 
+    const userNameInputRef = useRef<null | HTMLInputElement>(null)
     const [loginMessage, setLoginMessage] = useState<string>('')
 
     useEffect(() => {}, [loginMessage, name])
@@ -28,8 +29,10 @@ const Home = () => {
         const msg = await login(user)
         if (msg.length === 0) {
             navigate('/rooms')
+        } else {
+            setLoginMessage(msg)
+            userNameInputRef?.current?.focus()
         }
-        setLoginMessage(msg)
     }
 
     return (
@@ -39,6 +42,7 @@ const Home = () => {
                 onSubmit={onSubmit}
             >
                 <input
+                    ref={userNameInputRef}
                     type="text"
                     className={`w-full rounded-lg border-2 px-2 py-1.5 outline-none ${loginMessage.length > 0 && 'border-red-500'}`}
                     placeholder="Enter your name"
