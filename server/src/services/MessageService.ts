@@ -21,6 +21,15 @@ class MessageService {
     public getAllMessages(): Message[] {
         return this.messages
     }
+
+    public hasMessageFromUser(user: User): boolean {
+        for (const msg of this.messages) {
+            if (msg.sender.name === user.name) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 export default MessageService

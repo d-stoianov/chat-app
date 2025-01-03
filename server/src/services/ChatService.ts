@@ -23,7 +23,11 @@ class ChatService {
                 cb('VALIDATION')
                 return
             }
-            if (this.userService.checkIfNameExists(u.name)) {
+            // check for user in user map and if there are rooms with messages from this user
+            if (
+                this.userService.checkIfNameExists(u.name) ||
+                this.roomService.hasRoomWithMessagesFromUser(u)
+            ) {
                 cb('EXISTS')
                 return
             }

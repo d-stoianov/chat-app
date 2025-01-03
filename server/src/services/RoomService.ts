@@ -137,6 +137,16 @@ class RoomService {
 
         return roomsSummaries
     }
+
+    public hasRoomWithMessagesFromUser(user: User): boolean {
+        for (const r of this.rooms.values()) {
+            if (r.messageService.hasMessageFromUser(user)) {
+                return true
+            }
+        }
+
+        return false
+    }
 }
 
 export default RoomService
