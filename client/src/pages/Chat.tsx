@@ -19,7 +19,8 @@ const Chat = () => {
     const [receivedMessages, setReceivedMessages] = useState<Message[]>([])
     const [msgText, setMsgText] = useState<string>('')
 
-    const messageContainerRef = useRef<HTMLDivElement>(null)
+    const messageContainerRef = useRef<null | HTMLDivElement>(null)
+    const messageInputRef = useRef<null | HTMLInputElement>(null)
 
     // socket events
     useEffect(() => {
@@ -74,8 +75,7 @@ const Chat = () => {
             return
         }
 
-        // aproximately one message gap to be scrolled down
-        const THRESHOLD = 150 // px
+        const THRESHOLD = 200 // px
         const isAtBottom =
             container.scrollHeight -
                 container.scrollTop -
@@ -97,6 +97,7 @@ const Chat = () => {
         user.socket.emit('sendMessageToRoom', roomId, msgText)
 
         setMsgText('')
+        messageInputRef?.current?.focus()
     }
 
     if (!room) {
@@ -124,14 +125,16 @@ const Chat = () => {
             </div>
 
             <form
-                className="m-4 flex h-[5.5rem] flex-col justify-between rounded-xl bg-lightGray p-2"
+                className="m-4 flex h-[6rem] flex-col justify-between rounded-xl bg-lightGray p-2"
                 onSubmit={onSend}
             >
                 <input
+                    ref={messageInputRef}
                     type="text"
                     className="w-full bg-transparent outline-none"
                     placeholder="Message"
                     value={msgText}
+                    maxLength={200}
                     onChange={(e) => setMsgText(e.target.value)}
                 />
                 <div className="flex w-full flex-row">
