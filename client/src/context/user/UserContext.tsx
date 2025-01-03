@@ -1,10 +1,10 @@
 import { createContext } from 'react'
 
-import User from '@/entities/User'
+import User, { UserDTO } from '@/entities/User'
 
 interface UserContextI {
     user: User | null
-    login: (u: User) => Promise<string>
+    login: (u: UserDTO) => Promise<string>
 }
 
 const UserContext = createContext<UserContextI>({

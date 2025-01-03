@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { io } from 'socket.io-client'
 
 import useUser from '@/context/user/useUser'
-import User from '@/entities/User'
 import Button from '@/components/Button'
 import BaseLayout from '@/layouts/BaseLayout'
 
@@ -16,17 +14,12 @@ const Home = () => {
     const userNameInputRef = useRef<null | HTMLInputElement>(null)
     const [loginMessage, setLoginMessage] = useState<string>('')
 
-    useEffect(() => {}, [loginMessage, name])
-
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        const skt = io(import.meta.env.VITE_SOCKET_API_URL, {
-            path: import.meta.env.VITE_SOCKET_PATH,
-        })
-        const user = new User(name.trim(), skt)
+        const userDTO = { name: name.trim() }
 
-        const msg = await login(user)
+        const msg = await login(userDTO)
         if (msg.length === 0) {
             navigate('/rooms')
         } else {
