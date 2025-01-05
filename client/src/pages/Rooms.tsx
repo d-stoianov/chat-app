@@ -54,7 +54,7 @@ const Rooms = () => {
                 >
                     Create Room
                 </Button>
-                <div className="flex-grow overflow-y-scroll">
+                <div className="flex-grow overflow-y-auto">
                     {rooms.map((r, idx) => (
                         <div key={idx} className="px-8 pb-8">
                             <RoomCard {...r} />

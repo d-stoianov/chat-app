@@ -113,7 +113,7 @@ const Chat = () => {
 
             <div
                 ref={messageContainerRef}
-                className="flex h-full flex-grow flex-col gap-2 overflow-y-scroll p-4"
+                className="flex h-full flex-grow flex-col gap-2 overflow-y-auto p-4"
             >
                 {receivedMessages.map((msg, id) => (
                     <MessageCard
